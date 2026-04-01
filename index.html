@@ -568,22 +568,22 @@ input[type=number] { font-family: var(--font-mono); }
         <div class="metric-cell">
           <div class="metric-name">Monthly Repayment</div>
           <div class="metric-value" id="metricActualRep">—</div>
-          <div class="metric-sub">At actual rate</div>
+          <div class="metric-sub" id="metricActualRepSub">At actual rate</div>
         </div>
         <div class="metric-cell">
           <div class="metric-name">Assessed Repayment</div>
           <div class="metric-value" id="metricAssessedRep">—</div>
-          <div class="metric-sub">At assessment rate</div>
+          <div class="metric-sub" id="metricAssessedRepSub">At assessment rate</div>
         </div>
         <div class="metric-cell">
           <div class="metric-name">LVR</div>
           <div class="metric-value" id="metricLVR">—</div>
-          <div class="metric-sub">Loan-to-value ratio</div>
+          <div class="metric-sub" id="metricLVRSub">Loan-to-value ratio</div>
         </div>
         <div class="metric-cell">
           <div class="metric-name">DTI</div>
           <div class="metric-value" id="metricDTI">—</div>
-          <div class="metric-sub">Debt-to-income ratio</div>
+          <div class="metric-sub">Max borrowing / income</div>
         </div>
         <div class="metric-cell">
           <div class="metric-name">Net Monthly Income</div>
@@ -593,7 +593,7 @@ input[type=number] { font-family: var(--font-mono); }
         <div class="metric-cell">
           <div class="metric-name">Monthly Surplus</div>
           <div class="metric-value" id="metricSurplus">—</div>
-          <div class="metric-sub">After all commitments</div>
+          <div class="metric-sub" id="metricSurplusSub">Enter property + deposit to see</div>
         </div>
       </div>
 
@@ -947,39 +947,91 @@ function runCalc(inputs, assumptions) {
   const isIO = inputs.repType === 'io';
   const term = parseInt(inputs.loanTerm) || 30;
 
-  // Binary search for max loan
+  // ── MAX BORROWING POWER via binary search ──────────────────────
+  // Find the largest loan where monthly surplus ≥ minSurplus buffer.
+  // NOTE: at this exact loan amount surplus ≈ minSurplus by design.
+  // Surplus at max borrowing is NOT a useful display metric.
   const minSurplus = assumptions.minSurplus;
   let lo = 0, hi = 10000000, borrowingPower = 0;
   for (let i = 0; i < 60; i++) {
     const mid = (lo + hi) / 2;
     const assessed = isIO ? calcIORepayment(mid, assessmentRate) : calcMonthlyRepayment(mid, assessmentRate, term);
-    const surplus = netMonthlyIncome - appliedExpenses - monthlyLiabilities - assessed;
-    if (surplus >= minSurplus) { borrowingPower = mid; lo = mid; }
+    const s = netMonthlyIncome - appliedExpenses - monthlyLiabilities - assessed;
+    if (s >= minSurplus) { borrowingPower = mid; lo = mid; }
     else hi = mid;
   }
 
+  // ── TARGET LOAN — what the user is actually trying to borrow ───
+  // LVR, monthly surplus, repayments, income bar and position
+  // are all calculated against the TARGET loan (property - deposit),
+  // not the theoretical maximum. This is the meaningful number.
+  const propVal = parseFloat(inputs.propertyValue) || 0;
+  const deposit = parseFloat(inputs.deposit) || 0;
+  const targetLoan = Math.max(0, propVal - deposit);
+
+  // LVR = target loan / property value (standard definition)
+  const lvr = propVal > 0 && targetLoan > 0 ? (targetLoan / propVal) * 100 : (propVal > 0 ? 0 : null);
+
+  // Repayments on target loan
+  const targetActualRepayment = isIO ? calcIORepayment(targetLoan, actualRate) : calcMonthlyRepayment(targetLoan, actualRate, term);
+  const targetAssessedRepayment = isIO ? calcIORepayment(targetLoan, assessmentRate) : calcMonthlyRepayment(targetLoan, assessmentRate, term);
+
+  // Monthly surplus at target loan — the meaningful surplus figure
+  const surplusAtTarget = netMonthlyIncome - appliedExpenses - monthlyLiabilities - targetAssessedRepayment;
+
+  // Repayments on max borrowing power (for display reference)
   const actualRepayment = isIO ? calcIORepayment(borrowingPower, actualRate) : calcMonthlyRepayment(borrowingPower, actualRate, term);
   const assessedRepayment = isIO ? calcIORepayment(borrowingPower, assessmentRate) : calcMonthlyRepayment(borrowingPower, assessmentRate, term);
-  const surplus = netMonthlyIncome - appliedExpenses - monthlyLiabilities - assessedRepayment;
 
-  const propVal = parseFloat(inputs.propertyValue) || 0;
-  const lvr = propVal > 0 ? (borrowingPower / propVal) * 100 : null;
+  // DTI based on max borrowing power (standard serviceability metric)
   const dti = totalAssessableIncome > 0 ? borrowingPower / totalAssessableIncome : null;
+  // Target DTI — how many times income is the loan they're seeking
+  const targetDti = totalAssessableIncome > 0 && targetLoan > 0 ? targetLoan / totalAssessableIncome : null;
 
+  // Target feasibility
+  const targetFeasible = targetLoan === 0 || borrowingPower >= targetLoan;
+  const shortfall = targetFeasible ? 0 : targetLoan - borrowingPower;
+
+  // ── POSITION — based on target loan, not max borrowing ─────────
+  // Stronger: target loan affordable AND surplus healthy AND DTI reasonable
+  // Moderate: target loan affordable but tight, or max DTI moderate
+  // Constrained: target loan not affordable OR surplus very low
   let position = 'stronger';
-  if (dti !== null && dti > 6.5 || surplus < 300) position = 'constrained';
-  else if (dti !== null && dti > 5 || surplus < 800) position = 'moderate';
+  if (!targetFeasible || surplusAtTarget < 200) {
+    position = 'constrained';
+  } else if (surplusAtTarget < 800 || (dti !== null && dti > 6)) {
+    position = 'moderate';
+  }
 
   const factors = analyzeFactors(inputs, {
-    totalAssessableIncome, monthlyLiabilities, lvr, surplus,
-    assessmentRate, interestRate: actualRate, appliedExpenses
+    totalAssessableIncome, monthlyLiabilities, lvr,
+    surplus: surplusAtTarget,   // factors now use target surplus — meaningful
+    assessmentRate, interestRate: actualRate, appliedExpenses,
+    targetFeasible, shortfall
   }, assumptions);
 
   return {
-    borrowingPower, actualRepayment, assessedRepayment, surplus,
-    lvr, dti, position, netMonthlyIncome, appliedExpenses,
-    monthlyLiabilities, totalAssessableIncome, assessmentRate,
-    benchmark, factors, ccMonthly
+    borrowingPower,
+    targetLoan,
+    targetFeasible,
+    shortfall,
+    actualRepayment,          // repayment on max borrowing
+    assessedRepayment,        // assessed repayment on max borrowing
+    targetActualRepayment,    // repayment on target loan at actual rate
+    targetAssessedRepayment,  // repayment on target loan at assessed rate
+    surplus: surplusAtTarget, // surplus at TARGET loan — the useful metric
+    lvr,                      // based on target loan / property value
+    dti,                      // max borrowing / annual income
+    targetDti,
+    position,
+    netMonthlyIncome,
+    appliedExpenses,
+    monthlyLiabilities,
+    totalAssessableIncome,
+    assessmentRate,
+    benchmark,
+    factors,
+    ccMonthly
   };
 }
 
@@ -1085,21 +1137,56 @@ function renderResults(res) {
   currentResult = res;
   document.getElementById('resultAmount').textContent = fmt(res.borrowingPower);
   document.getElementById('resultAmount').className = 'result-amount ' + res.position;
-  
+
   const badge = document.getElementById('positionBadge');
   badge.className = 'position-badge ' + res.position;
   const posLabels = { stronger: '↑ Stronger Position', moderate: '◈ Moderate Position', constrained: '↓ Constrained Position' };
   document.getElementById('positionText').textContent = posLabels[res.position];
 
-  document.getElementById('metricActualRep').textContent = fmtM(res.actualRepayment);
-  document.getElementById('metricAssessedRep').textContent = fmtM(res.assessedRepayment);
+  // Feasibility banner — show if a target property is set
+  let feasibilityEl = document.getElementById('feasibilityBanner');
+  if (!feasibilityEl) {
+    feasibilityEl = document.createElement('div');
+    feasibilityEl.id = 'feasibilityBanner';
+    feasibilityEl.style.cssText = 'padding:10px 20px;font-size:12px;font-weight:600;display:flex;align-items:center;gap:8px;border-top:1px solid rgba(255,255,255,0.1);';
+    document.querySelector('.result-hero').appendChild(feasibilityEl);
+  }
+  if (res.targetLoan > 0) {
+    if (res.targetFeasible) {
+      feasibilityEl.style.background = 'rgba(42,125,82,0.25)';
+      feasibilityEl.style.color = '#7FFFB0';
+      feasibilityEl.innerHTML = `✓ Target loan ${fmt(res.targetLoan)} is within your estimated borrowing power`;
+    } else {
+      feasibilityEl.style.background = 'rgba(184,50,50,0.25)';
+      feasibilityEl.style.color = '#FF9999';
+      feasibilityEl.innerHTML = `✗ Target loan ${fmt(res.targetLoan)} exceeds borrowing power by ${fmt(res.shortfall)}`;
+    }
+    feasibilityEl.style.display = 'flex';
+  } else {
+    feasibilityEl.style.display = 'none';
+  }
+
+  // Repayments — show for TARGET loan (meaningful to user), note max borrowing in sub-label
+  document.getElementById('metricActualRep').textContent = res.targetLoan > 0 ? fmtM(res.targetActualRepayment) : fmtM(res.actualRepayment);
+  document.getElementById('metricActualRepSub').textContent = res.targetLoan > 0 ? 'Target loan, actual rate' : 'At max borrowing, actual rate';
+  document.getElementById('metricAssessedRep').textContent = res.targetLoan > 0 ? fmtM(res.targetAssessedRepayment) : fmtM(res.assessedRepayment);
+  document.getElementById('metricAssessedRepSub').textContent = res.targetLoan > 0 ? 'Target loan, assessment rate' : 'At max borrowing, assessed rate';
+
+  // LVR — target loan / property value (correct definition)
   document.getElementById('metricLVR').textContent = fmtPct(res.lvr);
+  document.getElementById('metricLVRSub').textContent = res.targetLoan > 0 ? `${fmt(res.targetLoan)} loan / ${fmt(parseFloat(document.getElementById('propertyValue').value))} property` : 'Loan-to-value ratio';
+
+  // DTI — max borrowing / annual income
   document.getElementById('metricDTI').textContent = res.dti !== null ? res.dti.toFixed(1) + 'x' : '—';
   document.getElementById('metricNetIncome').textContent = fmtM(res.netMonthlyIncome);
-  
+
+  // Surplus — at TARGET loan (the meaningful number)
   const surplusEl = document.getElementById('metricSurplus');
-  surplusEl.textContent = fmtM(res.surplus);
+  surplusEl.textContent = res.targetLoan > 0 ? fmtM(res.surplus) : '—';
   surplusEl.style.color = res.surplus < 0 ? 'var(--red)' : res.surplus < 500 ? 'var(--orange)' : 'var(--green)';
+  document.getElementById('metricSurplusSub').textContent = res.targetLoan > 0
+    ? (res.surplus < 0 ? 'Shortfall — loan not serviceable' : 'After all commitments (target loan)')
+    : 'Enter property + deposit to see';
 
   // Assessment rate display
   document.getElementById('assessRateDisplay').textContent = res.assessmentRate.toFixed(2) + '%';
@@ -1107,11 +1194,13 @@ function renderResults(res) {
   // Benchmark display
   document.getElementById('benchmarkDisplay').value = Math.round(res.benchmark);
 
-  // Income bars
+  // Income allocation bar — use TARGET loan assessed repayment
+  // This shows how your income is actually allocated for THIS purchase
+  const refRepayment = res.targetLoan > 0 ? res.targetAssessedRepayment : res.assessedRepayment;
   const total = Math.max(res.netMonthlyIncome, 1);
-  const loanPct = Math.min(res.assessedRepayment / total * 100, 80);
-  const expPct = Math.min(res.appliedExpenses / total * 100, 80);
-  const liabPct = Math.min(res.monthlyLiabilities / total * 100, 80);
+  const loanPct = Math.min(refRepayment / total * 100, 75);
+  const expPct = Math.min(res.appliedExpenses / total * 100, 75);
+  const liabPct = Math.min(res.monthlyLiabilities / total * 100, 75);
   const surplusPct = Math.max(0, 100 - loanPct - expPct - liabPct);
   document.getElementById('barSurplus').style.width = surplusPct + '%';
   document.getElementById('barLoan').style.width = loanPct + '%';
@@ -1145,10 +1234,10 @@ function renderScenarios() {
     <div class="scenario-amount">${fmt(baseRes.borrowingPower)}</div>
     <div class="scenario-delta" style="color:var(--text-muted)">Reference</div>
     <div class="scenario-metrics">
-      <div class="scenario-metric"><div class="scenario-metric-name">Monthly Repmt</div><div class="scenario-metric-val">${fmtM(baseRes.actualRepayment)}</div></div>
-      <div class="scenario-metric"><div class="scenario-metric-name">LVR</div><div class="scenario-metric-val">${fmtPct(baseRes.lvr)}</div></div>
-      <div class="scenario-metric"><div class="scenario-metric-name">DTI</div><div class="scenario-metric-val">${baseRes.dti !== null ? baseRes.dti.toFixed(1) + 'x' : '—'}</div></div>
-      <div class="scenario-metric"><div class="scenario-metric-name">Surplus</div><div class="scenario-metric-val">${fmtM(baseRes.surplus)}</div></div>
+      <div class="scenario-metric"><div class="scenario-metric-name">Target Repmt (actual rate)</div><div class="scenario-metric-val">${baseRes.targetLoan > 0 ? fmtM(baseRes.targetActualRepayment) : '—'}</div></div>
+      <div class="scenario-metric"><div class="scenario-metric-name">LVR (target loan)</div><div class="scenario-metric-val">${fmtPct(baseRes.lvr)}</div></div>
+      <div class="scenario-metric"><div class="scenario-metric-name">DTI (max borrowing)</div><div class="scenario-metric-val">${baseRes.dti !== null ? baseRes.dti.toFixed(1) + 'x' : '—'}</div></div>
+      <div class="scenario-metric"><div class="scenario-metric-name">Surplus (target loan)</div><div class="scenario-metric-val" style="color:${baseRes.surplus < 0 ? 'var(--red)' : baseRes.surplus < 500 ? 'var(--orange)' : 'var(--green)'}">${baseRes.targetLoan > 0 ? fmtM(baseRes.surplus) : '—'}</div></div>
     </div>` : '<div style="padding:20px;font-size:13px;color:var(--text-muted)">Calculate above first.</div>'}
     <div class="scenario-actions"><button class="btn-sm btn-primary" onclick="saveScenario(1)">Save as Scenario 1</button><button class="btn-sm btn-outline" onclick="saveScenario(2)">→ Scenario 2</button></div>
   </div>`;
@@ -1166,10 +1255,10 @@ function renderScenarios() {
       <div class="scenario-amount">${fmt(s.borrowingPower)}</div>
       <div class="scenario-delta ${delta >= 0 ? 'pos' : 'neg'}">${delta >= 0 ? '+' : ''}${fmt(delta)} vs base</div>
       <div class="scenario-metrics">
-        <div class="scenario-metric"><div class="scenario-metric-name">Monthly Repmt</div><div class="scenario-metric-val">${fmtM(s.actualRepayment)}</div></div>
-        <div class="scenario-metric"><div class="scenario-metric-name">LVR</div><div class="scenario-metric-val">${fmtPct(s.lvr)}</div></div>
-        <div class="scenario-metric"><div class="scenario-metric-name">DTI</div><div class="scenario-metric-val">${s.dti !== null ? s.dti.toFixed(1) + 'x' : '—'}</div></div>
-        <div class="scenario-metric"><div class="scenario-metric-name">Surplus</div><div class="scenario-metric-val">${fmtM(s.surplus)}</div></div>
+        <div class="scenario-metric"><div class="scenario-metric-name">Target Repmt (actual rate)</div><div class="scenario-metric-val">${s.targetLoan > 0 ? fmtM(s.targetActualRepayment) : '—'}</div></div>
+        <div class="scenario-metric"><div class="scenario-metric-name">LVR (target loan)</div><div class="scenario-metric-val">${fmtPct(s.lvr)}</div></div>
+        <div class="scenario-metric"><div class="scenario-metric-name">DTI (max borrowing)</div><div class="scenario-metric-val">${s.dti !== null ? s.dti.toFixed(1) + 'x' : '—'}</div></div>
+        <div class="scenario-metric"><div class="scenario-metric-name">Surplus (target loan)</div><div class="scenario-metric-val" style="color:${s.surplus < 0 ? 'var(--red)' : s.surplus < 500 ? 'var(--orange)' : 'var(--green)'}">${s.targetLoan > 0 ? fmtM(s.surplus) : '—'}</div></div>
       </div>` : `<div style="padding:20px;font-size:13px;color:var(--text-muted)">Adjust inputs and save a scenario to compare.</div>`}
       <div class="scenario-actions">
         <button class="btn-sm btn-primary" onclick="saveScenario(${i})">Save Current Inputs</button>
