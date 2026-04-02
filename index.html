@@ -1,546 +1,1636 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>sid.lammata — Builder</title>
-  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800&family=Syne:wght@400;600;700;800&family=JetBrains+Mono:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --bg:        #07070e;
-      --bg-card:   #0e0e1c;
-      --bg-card-h: #131328;
-      --border:    #202038;
-      --border-h:  #3838a0;
-      --accent:    #FF6B00;
-      --green:     #50fa7b;
-      --text:      #f5f5fd;
-      --sub:       #9898b8;
-      --muted:     #6060a0;
-      --tag-bg:    #161630;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Estimated Borrowing Power Calculator | Australian Market</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root {
+  --navy: #1C3557;
+  --navy-light: #2B4F80;
+  --gold: #C8973A;
+  --gold-light: #E8B85A;
+  --cream: #F7F5F1;
+  --white: #FFFFFF;
+  --card: #FFFFFF;
+  --border: #E3DDD5;
+  --text: #1A1A2E;
+  --text-muted: #6B6570;
+  --text-light: #9B96A0;
+  --green: #2A7D52;
+  --orange: #D4732A;
+  --red: #B83232;
+  --green-bg: #EBF5F0;
+  --orange-bg: #FDF0E6;
+  --red-bg: #FAF0F0;
+  --shadow-sm: 0 1px 4px rgba(28,53,87,0.08);
+  --shadow-md: 0 4px 16px rgba(28,53,87,0.12);
+  --shadow-lg: 0 8px 32px rgba(28,53,87,0.16);
+  --radius: 12px;
+  --radius-sm: 8px;
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-body: 'DM Sans', system-ui, sans-serif;
+  --font-mono: 'DM Mono', 'Courier New', monospace;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { font-family: var(--font-body); background: var(--cream); color: var(--text); min-height: 100vh; font-size: 15px; line-height: 1.5; }
 
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; }
+/* HEADER */
+.header { background: var(--navy); color: white; padding: 0 24px; position: sticky; top: 0; z-index: 100; box-shadow: var(--shadow-md); }
+.header-inner { max-width: 1400px; margin: 0 auto; display: flex; align-items: center; gap: 16px; height: 64px; }
+.header-logo { font-family: var(--font-display); font-size: 18px; font-weight: 600; color: white; letter-spacing: -0.3px; white-space: nowrap; }
+.header-logo span { color: var(--gold-light); }
+.header-spacer { flex: 1; }
+.header-badge { background: rgba(200,151,58,0.2); border: 1px solid rgba(200,151,58,0.4); color: var(--gold-light); font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 20px; letter-spacing: 0.5px; text-transform: uppercase; white-space: nowrap; }
+.header-actions { display: flex; gap: 8px; }
+.btn-header { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 6px 14px; border-radius: 6px; font-size: 13px; font-family: var(--font-body); cursor: pointer; transition: all 0.15s; white-space: nowrap; }
+.btn-header:hover { background: rgba(255,255,255,0.2); }
 
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: 'DM Sans', sans-serif;
-      min-height: 100vh;
-      overflow-x: hidden;
-    }
+/* DISCLAIMER */
+.disclaimer { background: #FFF8EE; border-bottom: 1px solid #F0E0C0; padding: 8px 24px; font-size: 12px; color: #8B6914; text-align: center; }
+.disclaimer strong { color: #6B4E10; }
 
-    body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background-image:
-        linear-gradient(var(--border) 1px, transparent 1px),
-        linear-gradient(90deg, var(--border) 1px, transparent 1px);
-      background-size: 48px 48px;
-      opacity: 0.2;
-      pointer-events: none;
-      z-index: 0;
-    }
+/* MAIN LAYOUT */
+.main-container { max-width: 1400px; margin: 0 auto; padding: 24px; display: grid; grid-template-columns: minmax(0,1fr) 380px; gap: 24px; align-items: start; }
+@media (max-width: 1024px) { .main-container { grid-template-columns: 1fr; } }
 
-    .page {
-      position: relative;
-      z-index: 1;
-      max-width: 1060px;
-      margin: 0 auto;
-      padding: 48px 24px 64px;
-    }
+/* CARDS */
+.card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow-sm); overflow: hidden; }
+.card-header { padding: 16px 20px 12px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
+.card-title { font-family: var(--font-display); font-size: 16px; font-weight: 600; color: var(--navy); }
+.card-body { padding: 20px; }
 
-    /* ── HEADER ── */
-    .header {
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      background: var(--bg-card);
-      padding: 40px 48px;
-      margin-bottom: 16px;
-      position: relative;
-      overflow: hidden;
-      animation: fadeUp 0.5s ease both;
-    }
+/* TABS */
+.tabs { display: flex; border-bottom: 1px solid var(--border); overflow-x: auto; scrollbar-width: none; }
+.tabs::-webkit-scrollbar { display: none; }
+.tab { padding: 10px 16px; font-size: 13px; font-weight: 500; color: var(--text-muted); cursor: pointer; border-bottom: 2px solid transparent; white-space: nowrap; transition: all 0.15s; }
+.tab:hover { color: var(--navy); }
+.tab.active { color: var(--navy); border-bottom-color: var(--gold); font-weight: 600; }
+.tab-content { display: none; padding: 20px; }
+.tab-content.active { display: block; }
 
-    .header::after {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 1px;
-      background: linear-gradient(90deg, transparent, var(--accent), transparent);
-      opacity: 0.75;
-    }
+/* FORM ELEMENTS */
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.form-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+@media (max-width: 600px) { .form-grid, .form-grid-3 { grid-template-columns: 1fr; } }
+.field { display: flex; flex-direction: column; gap: 4px; }
+.field-full { grid-column: 1 / -1; }
+label { font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+input[type=number], input[type=text], select {
+  height: 40px; border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+  padding: 0 12px; font-family: var(--font-body); font-size: 14px; color: var(--text);
+  background: var(--white); transition: border-color 0.15s; outline: none; width: 100%;
+}
+input[type=number]:focus, input[type=text]:focus, select:focus { border-color: var(--navy); }
+input[type=number] { font-family: var(--font-mono); }
+.field-hint { font-size: 11px; color: var(--text-light); margin-top: 2px; }
+.input-prefix-wrap { position: relative; }
+.input-prefix { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-family: var(--font-mono); font-size: 14px; color: var(--text-muted); pointer-events: none; }
+.input-prefix-wrap input { padding-left: 26px; }
+.input-suffix-wrap { position: relative; }
+.input-suffix { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); font-family: var(--font-mono); font-size: 14px; color: var(--text-muted); pointer-events: none; }
+.input-suffix-wrap input { padding-right: 30px; }
 
-    .header-top {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 16px;
-    }
+/* TOGGLE */
+.toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; }
+.toggle-label { font-size: 14px; font-weight: 500; color: var(--text); }
+.toggle-sub { font-size: 12px; color: var(--text-muted); }
+.toggle { position: relative; width: 40px; height: 22px; flex-shrink: 0; }
+.toggle input { opacity: 0; width: 0; height: 0; }
+.toggle-slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background: #D0CCCB; border-radius: 22px; transition: 0.2s; }
+.toggle-slider::before { content: ''; position: absolute; height: 16px; width: 16px; left: 3px; bottom: 3px; background: white; border-radius: 50%; transition: 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
+.toggle input:checked + .toggle-slider { background: var(--navy); }
+.toggle input:checked + .toggle-slider::before { transform: translateX(18px); }
 
-    .name {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: clamp(36px, 6vw, 62px);
-      font-weight: 800;
-      letter-spacing: 2px;
-      line-height: 1;
-      color: var(--text);
-    }
+/* RADIO GROUP */
+.radio-group { display: flex; gap: 8px; flex-wrap: wrap; }
+.radio-btn { flex: 1; min-width: 80px; }
+.radio-btn input { display: none; }
+.radio-btn label { display: flex; align-items: center; justify-content: center; padding: 8px 12px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); font-size: 13px; font-weight: 500; color: var(--text-muted); cursor: pointer; transition: all 0.15s; text-align: center; text-transform: none; letter-spacing: 0; }
+.radio-btn input:checked + label { border-color: var(--navy); background: rgba(28,53,87,0.06); color: var(--navy); font-weight: 600; }
+.radio-btn label:hover { border-color: var(--navy-light); color: var(--navy); }
 
-    .name span { color: var(--accent); }
+/* SECTION DIVIDER */
+.section-title { font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin: 20px 0 12px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
 
-    .status-pill {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      background: var(--tag-bg);
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      padding: 6px 14px;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 11px;
-      color: var(--sub);
-      white-space: nowrap;
-    }
+/* RESULTS PANEL */
+.results-sticky { position: sticky; top: 88px; }
+.result-hero { background: var(--navy); border-radius: var(--radius) var(--radius) 0 0; padding: 24px 20px; color: white; }
+.result-label { font-size: 11px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: rgba(255,255,255,0.6); margin-bottom: 6px; }
+.result-amount { font-family: var(--font-mono); font-size: 38px; font-weight: 500; color: white; letter-spacing: -1px; line-height: 1; }
+.result-amount.constrained { color: #FF9999; }
+.result-amount.moderate { color: var(--gold-light); }
+.result-amount.stronger { color: #7FFFB0; }
+.position-badge { display: inline-flex; align-items: center; gap: 5px; margin-top: 10px; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+.position-badge.stronger { background: rgba(127,255,176,0.15); color: #7FFFB0; }
+.position-badge.moderate { background: rgba(232,184,90,0.15); color: var(--gold-light); }
+.position-badge.constrained { background: rgba(255,153,153,0.15); color: #FF9999; }
+.position-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
 
-    /* Green status dot — universally understood as "available" */
-    .status-dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background: var(--green);
-      box-shadow: 0 0 8px var(--green);
-      animation: pulse 2s ease-in-out infinite;
-      flex-shrink: 0;
-    }
+.metrics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); border-top: 1px solid var(--border); }
+.metric-cell { background: var(--card); padding: 14px 16px; }
+.metric-name { font-size: 11px; color: var(--text-muted); font-weight: 500; margin-bottom: 3px; }
+.metric-value { font-family: var(--font-mono); font-size: 16px; font-weight: 500; color: var(--navy); }
+.metric-sub { font-size: 11px; color: var(--text-light); margin-top: 1px; }
 
-    /* Tagline — all phrases same font, weight, colour. Uniform. */
-    .tagline {
-      margin-top: 22px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 17px;
-      font-weight: 400;
-      color: var(--sub);
-      max-width: 640px;
-      line-height: 1.75;
-    }
+/* FACTORS */
+.factors-section { padding: 16px 20px; border-top: 1px solid var(--border); }
+.factors-heading { font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; }
+.factor-item { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 7px; font-size: 13px; color: var(--text); line-height: 1.4; }
+.factor-icon { width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; flex-shrink: 0; margin-top: 1px; }
+.factor-icon.help { background: var(--green-bg); color: var(--green); }
+.factor-icon.hurt { background: var(--red-bg); color: var(--red); }
 
-    /* "don't ask how" — orange punchline */
-    .tagline .punchline { color: var(--accent); }
+/* SURPLUS BAR */
+.surplus-bar-wrap { padding: 16px 20px; border-top: 1px solid var(--border); }
+.surplus-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; font-size: 12px; }
+.bar-bg { height: 8px; background: #E8E4E0; border-radius: 4px; overflow: hidden; }
+.bar-fill { height: 100%; border-radius: 4px; transition: width 0.4s ease; }
 
-    /* Sub-tagline comments — green like the status dot */
-    .sub-tagline {
-      margin-top: 14px;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 12px;
-      color: var(--green);
-      opacity: 0.85;
-    }
+/* AI PANEL */
+.ai-panel { border-top: 1px solid var(--border); }
+.ai-header { padding: 14px 20px; display: flex; align-items: center; gap: 8px; cursor: pointer; }
+.ai-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--gold); animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+.ai-title { font-size: 13px; font-weight: 600; color: var(--navy); }
+.ai-body { padding: 0 20px 16px; }
+.ai-text { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+.ai-loading { display: flex; gap: 4px; align-items: center; padding: 4px 0; }
+.ai-dot-anim { width: 5px; height: 5px; border-radius: 50%; background: var(--text-light); animation: bounce 1.2s infinite; }
+.ai-dot-anim:nth-child(2) { animation-delay: 0.2s; }
+.ai-dot-anim:nth-child(3) { animation-delay: 0.4s; }
+@keyframes bounce { 0%,80%,100% { transform: translateY(0); } 40% { transform: translateY(-5px); } }
+.ai-recs { margin-top: 12px; display: flex; flex-direction: column; gap: 6px; }
+.ai-rec { background: #F0F5FF; border: 1px solid #C8D9F0; border-radius: var(--radius-sm); padding: 8px 12px; font-size: 12px; color: var(--navy); }
 
-    .sub-tagline::before { content: '// '; opacity: 0.5; }
+/* COPILOT */
+.copilot-section { border-top: 1px solid var(--border); padding: 16px 20px; }
+.copilot-label { font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; }
+.copilot-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+.copilot-chip { background: var(--cream); border: 1px solid var(--border); border-radius: 20px; padding: 4px 12px; font-size: 12px; color: var(--navy); cursor: pointer; transition: all 0.15s; }
+.copilot-chip:hover { background: var(--navy); color: white; border-color: var(--navy); }
+.copilot-input-row { display: flex; gap: 8px; }
+.copilot-input { flex: 1; height: 38px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); padding: 0 12px; font-family: var(--font-body); font-size: 13px; outline: none; }
+.copilot-input:focus { border-color: var(--navy); }
+.btn-send { height: 38px; padding: 0 14px; background: var(--navy); color: white; border: none; border-radius: var(--radius-sm); font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; }
+.btn-send:hover { background: var(--navy-light); }
+.copilot-messages { max-height: 200px; overflow-y: auto; margin-top: 10px; display: flex; flex-direction: column; gap: 8px; }
+.msg { padding: 8px 12px; border-radius: var(--radius-sm); font-size: 13px; line-height: 1.5; }
+.msg-user { background: var(--navy); color: white; align-self: flex-end; max-width: 80%; }
+.msg-ai { background: #F0F4FA; color: var(--text); max-width: 90%; }
 
-    .sub-tagline .quip { opacity: 1; font-style: italic; }
+/* SCENARIO SECTION */
+.scenario-section { margin-top: 24px; }
+.scenario-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 16px; }
+@media (max-width: 768px) { .scenario-grid { grid-template-columns: 1fr; } }
+.scenario-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+.scenario-card.base { border-color: var(--navy); }
+.scenario-head { padding: 12px 16px; background: var(--cream); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+.scenario-name { font-size: 13px; font-weight: 600; color: var(--navy); }
+.scenario-edit-name { border: none; background: transparent; font-size: 13px; font-weight: 600; color: var(--navy); font-family: var(--font-body); outline: none; width: 120px; cursor: text; }
+.scenario-head.base-head { background: var(--navy); }
+.scenario-head.base-head .scenario-name { color: white; }
+.scenario-amount { font-family: var(--font-mono); font-size: 22px; font-weight: 500; color: var(--navy); padding: 14px 16px 4px; }
+.scenario-delta { font-size: 12px; font-weight: 600; padding: 0 16px 12px; }
+.scenario-delta.pos { color: var(--green); }
+.scenario-delta.neg { color: var(--red); }
+.scenario-metrics { padding: 12px 16px; border-top: 1px solid var(--border); display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.scenario-metric { }
+.scenario-metric-name { font-size: 11px; color: var(--text-muted); }
+.scenario-metric-val { font-family: var(--font-mono); font-size: 13px; font-weight: 500; color: var(--text); }
+.scenario-actions { padding: 12px 16px; border-top: 1px solid var(--border); display: flex; gap: 8px; }
+.btn-sm { padding: 5px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; border: 1.5px solid; transition: all 0.15s; font-family: var(--font-body); }
+.btn-outline { border-color: var(--border); background: transparent; color: var(--text-muted); }
+.btn-outline:hover { border-color: var(--navy); color: var(--navy); }
+.btn-primary { border-color: var(--navy); background: var(--navy); color: white; }
+.btn-primary:hover { background: var(--navy-light); border-color: var(--navy-light); }
 
-    /* ── 2×2 EQUAL GRID ── */
-    .grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-    }
+/* CHART SECTION */
+.chart-section { margin-top: 24px; }
+.chart-container { position: relative; height: 240px; padding: 20px; }
 
-    .card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 28px;
-      position: relative;
-      overflow: hidden;
-      transition: border-color 0.25s, background 0.25s, transform 0.25s;
-      text-decoration: none;
-      color: inherit;
-      display: flex;
-      flex-direction: column;
-      animation: fadeUp 0.6s ease both;
-    }
+/* EDUCATION */
+.education-section { margin-top: 24px; }
+.edu-item { border-bottom: 1px solid var(--border); }
+.edu-item:last-child { border-bottom: none; }
+.edu-toggle { width: 100%; padding: 14px 20px; text-align: left; background: none; border: none; cursor: pointer; display: flex; align-items: center; justify-content: space-between; font-family: var(--font-body); font-size: 14px; font-weight: 500; color: var(--navy); }
+.edu-toggle:hover { background: var(--cream); }
+.edu-arrow { font-size: 12px; color: var(--text-muted); transition: transform 0.2s; }
+.edu-toggle.open .edu-arrow { transform: rotate(180deg); }
+.edu-content { padding: 0 20px 16px; font-size: 13px; color: var(--text-muted); line-height: 1.7; display: none; }
+.edu-content.open { display: block; }
 
-    .card:hover {
-      border-color: var(--border-h);
-      background: var(--bg-card-h);
-      transform: translateY(-4px);
-    }
+/* SETTINGS MODAL */
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; display: none; align-items: center; justify-content: center; padding: 20px; }
+.modal-overlay.open { display: flex; }
+.modal { background: white; border-radius: var(--radius); max-width: 640px; width: 100%; max-height: 90vh; overflow-y: auto; box-shadow: var(--shadow-lg); }
+.modal-header { padding: 20px 24px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; background: white; z-index: 1; }
+.modal-title { font-family: var(--font-display); font-size: 18px; font-weight: 600; color: var(--navy); }
+.modal-close { width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--border); background: none; cursor: pointer; font-size: 18px; color: var(--text-muted); display: flex; align-items: center; justify-content: center; }
+.modal-body { padding: 24px; }
+.modal-section { margin-bottom: 24px; }
+.modal-section-title { font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; }
+.modal-footer { padding: 16px 24px; border-top: 1px solid var(--border); display: flex; gap: 10px; justify-content: flex-end; }
 
-    .card:hover .card-glow { opacity: 1; }
+/* API KEY */
+.api-key-section { background: #FFF8F0; border: 1px solid #F0D8B0; border-radius: var(--radius-sm); padding: 14px; margin-bottom: 0; }
+.api-key-label { font-size: 12px; font-weight: 600; color: #8B5E14; margin-bottom: 6px; }
+.api-key-input { width: 100%; height: 36px; border: 1px solid #E0C090; border-radius: 6px; padding: 0 12px; font-family: var(--font-mono); font-size: 12px; background: white; outline: none; }
+.api-key-hint { font-size: 11px; color: #A07030; margin-top: 5px; }
 
-    /* Orange glow on top edge */
-    .card-glow {
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 1px;
-      background: linear-gradient(90deg, transparent, var(--accent), transparent);
-      opacity: 0;
-      transition: opacity 0.3s;
-    }
+/* BADGES */
+.badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; }
+.badge-info { background: rgba(28,53,87,0.08); color: var(--navy); }
 
-    /* ── CARD HEADER: icon inline with title ── */
-    .card-header {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 14px;
-    }
+/* BUTTONS MAIN */
+.btn-gold { background: var(--gold); border: none; color: white; padding: 10px 20px; border-radius: var(--radius-sm); font-size: 14px; font-weight: 600; cursor: pointer; font-family: var(--font-body); transition: background 0.15s; }
+.btn-gold:hover { background: var(--gold-light); }
+.btn-ghost { background: transparent; border: 1.5px solid var(--border); color: var(--text-muted); padding: 9px 16px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 500; cursor: pointer; font-family: var(--font-body); transition: all 0.15s; }
+.btn-ghost:hover { border-color: var(--navy); color: var(--navy); }
 
-    .card-icon {
-      font-size: 28px;
-      line-height: 1;
-      flex-shrink: 0;
-    }
+.alert { padding: 10px 14px; border-radius: var(--radius-sm); font-size: 13px; margin-bottom: 14px; }
+.alert-orange { background: var(--orange-bg); border: 1px solid #EFCAA0; color: #8B4420; }
 
-    .card-title {
-      font-family: 'Syne', sans-serif;
-      font-size: 21px;
-      font-weight: 700;
-      letter-spacing: -0.4px;
-      color: var(--text);
-      line-height: 1.1;
-    }
-
-    .card-desc {
-      font-family: 'DM Sans', sans-serif;
-      font-size: 14px;
-      font-weight: 400;
-      color: #ababcc;
-      line-height: 1.65;
-      margin-bottom: 16px;
-      flex-grow: 1;
-    }
-
-    .card-divider {
-      height: 1px;
-      background: var(--border);
-      margin-bottom: 14px;
-      flex-shrink: 0;
-    }
-
-    /* Card jokes — green like code comments */
-    .card-joke {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 11px;
-      font-style: italic;
-      color: var(--green);
-      opacity: 0.82;
-      margin-bottom: 16px;
-      line-height: 1.55;
-      flex-shrink: 0;
-    }
-
-    .card-joke::before { content: '// '; opacity: 0.5; }
-
-    .tags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-bottom: 22px;
-      flex-shrink: 0;
-    }
-
-    /* Base tag shape — colors overridden per category */
-    .tag {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 10px;
-      font-weight: 500;
-      padding: 4px 11px;
-      border-radius: 999px;
-      border: 1px solid;
-    }
-
-    /* ── TAG COLOUR SYSTEM — persistent across all cards ── */
-    /* Finance → violet/purple */
-    .tag-finance {
-      color: #c084fc;
-      border-color: rgba(192,132,252,0.55);
-      background: rgba(168,85,247,0.14);
-    }
-    /* Property → cyan */
-    .tag-property {
-      color: #22d3ee;
-      border-color: rgba(34,211,238,0.45);
-      background: rgba(34,211,238,0.11);
-    }
-    /* Home Loans → amber */
-    .tag-homeloans {
-      color: #fbbf24;
-      border-color: rgba(251,191,36,0.45);
-      background: rgba(251,191,36,0.11);
-    }
-    /* AFL / Footy → red */
-    .tag-afl, .tag-footy {
-      color: #f87171;
-      border-color: rgba(248,113,113,0.45);
-      background: rgba(248,113,113,0.11);
-    }
-    /* Team Quiz → rose/pink */
-    .tag-quiz {
-      color: #f472b6;
-      border-color: rgba(244,114,182,0.45);
-      background: rgba(244,114,182,0.11);
-    }
-    /* Travel → sky blue */
-    .tag-travel {
-      color: #60a5fa;
-      border-color: rgba(96,165,250,0.45);
-      background: rgba(96,165,250,0.11);
-    }
-    /* Business Class / Flights → indigo */
-    .tag-businessclass, .tag-flights {
-      color: #a5b4fc;
-      border-color: rgba(165,180,252,0.45);
-      background: rgba(99,102,241,0.14);
-    }
-    /* Wealth → gold */
-    .tag-wealth {
-      color: #fcd34d;
-      border-color: rgba(252,211,77,0.45);
-      background: rgba(252,211,77,0.11);
-    }
-    /* Net Worth → emerald */
-    .tag-networth {
-      color: #34d399;
-      border-color: rgba(52,211,153,0.45);
-      background: rgba(52,211,153,0.11);
-    }
-    /* Insights → teal */
-    .tag-insights {
-      color: #2dd4bf;
-      border-color: rgba(45,212,191,0.45);
-      background: rgba(45,212,191,0.11);
-    }
-
-    /* ── LAUNCH BUTTON — orange to deep blue gradient, white text ── */
-    .launch-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 9px;
-      font-family: 'Syne', sans-serif;
-      font-size: 14px;
-      font-weight: 500;
-      letter-spacing: 0.3px;
-      color: #ffffff;
-      background: linear-gradient(to right, #FF6B00, #0d0d28);
-      border: none;
-      border-radius: 10px;
-      padding: 12px 22px;
-      box-shadow: none;
-      transition: opacity 0.25s ease, transform 0.2s ease;
-      flex-shrink: 0;
-      align-self: flex-start;
-      cursor: pointer;
-      text-decoration: none;
-    }
-
-    .launch-btn svg {
-      width: 15px;
-      height: 15px;
-      stroke: currentColor;
-      fill: none;
-      stroke-width: 2.5;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-      flex-shrink: 0;
-    }
-
-    .card:hover .launch-btn {
-      opacity: 0.88;
-      transform: translateY(-1px);
-      box-shadow: none;
-    }
-
-    /* ── FOOTER ── */
-    .footer {
-      margin-top: 16px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 20px 4px;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 11px;
-      color: var(--muted);
-      border-top: 1px solid var(--border);
-      flex-wrap: wrap;
-      gap: 12px;
-      animation: fadeUp 0.6s 0.5s ease both;
-    }
-
-    .footer a {
-      color: var(--muted);
-      text-decoration: none;
-      transition: color 0.2s;
-    }
-
-    .footer a:hover { color: var(--accent); }
-    .footer-links { display: flex; gap: 20px; }
-
-    /* ── ANIMATIONS ── */
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(16px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50%       { opacity: 0.3; }
-    }
-
-    .card:nth-child(1) { animation-delay: 0.10s; }
-    .card:nth-child(2) { animation-delay: 0.17s; }
-    .card:nth-child(3) { animation-delay: 0.24s; }
-    .card:nth-child(4) { animation-delay: 0.31s; }
-
-    /* ── RESPONSIVE ── */
-    @media (max-width: 680px) {
-      .grid { grid-template-columns: 1fr; }
-      .header { padding: 28px 24px; }
-      .name { font-size: 36px; }
-    }
-  </style>
+/* FOOTER */
+.footer { text-align: center; padding: 32px 24px; font-size: 12px; color: var(--text-light); max-width: 1400px; margin: 0 auto; border-top: 1px solid var(--border); }
+.footer strong { color: var(--text-muted); }
+</style>
 </head>
 <body>
-<div class="page">
 
-  <!-- HEADER -->
-  <header class="header">
-    <div class="header-top">
-      <h1 class="name">SID<span>.</span>LAMMATA</h1>
-      <div class="status-pill">
-        <span class="status-dot"></span>
-        available for collabs
-      </div>
+<!-- HEADER -->
+<header class="header">
+  <div class="header-inner">
+    <div class="header-logo">Borrow<span>Scope</span></div>
+    <div class="header-badge">Estimate Only</div>
+    <div class="header-spacer"></div>
+    <div class="header-actions">
+      <button class="btn-header" onclick="openSettings()">⚙ Settings</button>
+      <button class="btn-header" onclick="resetAll()">↺ Reset</button>
     </div>
-    <p class="tagline">
-      Professional googler. Low-code cowboy. Recovering PowerPoint architect.
-      I build tools that actually work —
-      <span class="punchline">don't ask how!</span>
-    </p>
-    <p class="sub-tagline">Few things I shipped. <span class="quip">One of them might even be useful.</span></p>
-  </header>
+  </div>
+</header>
 
-  <!-- 2×2 EQUAL GRID -->
-  <div class="grid">
-
-    <!-- Card 1 — Borrow Scope -->
-    <a href="#" class="card">
-      <div class="card-glow"></div>
-      <div class="card-header">
-        <span class="card-icon">🏠</span>
-        <h2 class="card-title">Borrow Scope</h2>
-      </div>
-      <div class="card-desc">
-        Ever wondered how much the bank will actually trust you with before quietly laughing?
-        Enter your numbers, confront the truth, plan accordingly. A borrowing capacity
-        estimator for aspiring property owners who still believe the dream is possible.
-      </div>
-      <div class="card-divider"></div>
-      <div class="card-joke">"Your bank has opinions. This app has math. One of them is on your side."</div>
-      <div class="tags">
-        <span class="tag tag-finance">Finance</span>
-        <span class="tag tag-property">Property</span>
-        <span class="tag tag-homeloans">Home Loans</span>
-      </div>
-      <div class="launch-btn">
-        Open app
-        <svg viewBox="0 0 24 24"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg>
-      </div>
-    </a>
-
-    <!-- Card 2 — Pick AFL Team -->
-    <a href="#" class="card">
-      <div class="card-glow"></div>
-      <div class="card-header">
-        <span class="card-icon">🏉</span>
-        <h2 class="card-title">Pick AFL Team</h2>
-      </div>
-      <div class="card-desc">
-        No team? No identity. Answer a few honest questions about your personality,
-        life choices, and pain threshold — we'll match you with your perfect AFL club.
-        Loyalty algorithm sold separately.
-      </div>
-      <div class="card-divider"></div>
-      <div class="card-joke">"Because 'I go for whoever's winning' is not a personality trait."</div>
-      <div class="tags">
-        <span class="tag tag-afl">AFL</span>
-        <span class="tag tag-footy">Footy</span>
-        <span class="tag tag-quiz">Team Quiz</span>
-      </div>
-      <div class="launch-btn">
-        Open app
-        <svg viewBox="0 0 24 24"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg>
-      </div>
-    </a>
-
-    <!-- Card 3 — Premium Deals -->
-    <a href="#" class="card">
-      <div class="card-glow"></div>
-      <div class="card-header">
-        <span class="card-icon">✈️</span>
-        <h2 class="card-title">Premium Deals</h2>
-      </div>
-      <div class="card-desc">
-        Business class and first class flight deals the airlines don't advertise.
-        They exist. You just had to know where to look — and now you do.
-        Champagne taste, points-hacker budget.
-      </div>
-      <div class="card-divider"></div>
-      <div class="card-joke">"Your mates flew Economy. You found the loophole. Say nothing."</div>
-      <div class="tags">
-        <span class="tag tag-travel">Travel</span>
-        <span class="tag tag-businessclass">Business Class</span>
-        <span class="tag tag-flights">Flight Deals</span>
-      </div>
-      <div class="launch-btn">
-        Open app
-        <svg viewBox="0 0 24 24"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg>
-      </div>
-    </a>
-
-    <!-- Card 4 — My Money -->
-    <a href="#" class="card">
-      <div class="card-glow"></div>
-      <div class="card-header">
-        <span class="card-icon">💰</span>
-        <h2 class="card-title">My Money</h2>
-      </div>
-      <div class="card-desc">
-        A wealth dashboard that shows your full financial picture — assets, liabilities,
-        and net worth — all in one place. No surprises. Well. Maybe one small one.
-      </div>
-      <div class="card-divider"></div>
-      <div class="card-joke">"Net worth: tracked. Self worth: still pending."</div>
-      <div class="tags">
-        <span class="tag tag-finance">Finance</span>
-        <span class="tag tag-wealth">Wealth</span>
-        <span class="tag tag-networth">Net Worth</span>
-        <span class="tag tag-insights">Insights</span>
-      </div>
-      <div class="launch-btn">
-        Open app
-        <svg viewBox="0 0 24 24"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg>
-      </div>
-    </a>
-
-  </div><!-- /grid -->
-
-  <!-- FOOTER -->
-  <footer class="footer">
-    <span>© 2026 SID.LAMMATA — built with intent, debugged with patience</span>
-    <div class="footer-links">
-      <a href="https://github.com/lowcodesid" target="_blank" rel="noopener">GitHub</a>
-      <a href="https://www.linkedin.com/in/sidlammata/" target="_blank" rel="noopener">LinkedIn</a>
-      <a href="mailto:sid.lammata@gmail.com">Contact</a>
-    </div>
-  </footer>
-
+<!-- DISCLAIMER -->
+<div class="disclaimer">
+  <strong>Estimate only.</strong> Not financial advice, not a credit approval, and not representative of any specific lender's policy. Based on common Australian lender serviceability principles. Actual outcomes vary by lender, credit profile, and property type.
 </div>
+
+<!-- MAIN -->
+<div class="main-container">
+
+  <!-- LEFT PANEL: FORM -->
+  <div class="left-panel">
+    <div class="card">
+      <div class="tabs" role="tablist">
+        <div class="tab active" onclick="switchTab(0)" id="tab-0">👤 Applicant</div>
+        <div class="tab" onclick="switchTab(1)" id="tab-1">💰 Income</div>
+        <div class="tab" onclick="switchTab(2)" id="tab-2">🧾 Expenses</div>
+        <div class="tab" onclick="switchTab(3)" id="tab-3">📋 Liabilities</div>
+        <div class="tab" onclick="switchTab(4)" id="tab-4">🏡 Loan</div>
+      </div>
+
+      <!-- TAB 0: APPLICANT -->
+      <div class="tab-content active" id="tc-0">
+        <div class="section-title">Application Type</div>
+        <div class="radio-group">
+          <div class="radio-btn"><input type="radio" name="appType" id="appSingle" value="single" checked onchange="onInputChange()"><label for="appSingle">Single</label></div>
+          <div class="radio-btn"><input type="radio" name="appType" id="appJoint" value="joint" onchange="onInputChange()"><label for="appJoint">Joint</label></div>
+        </div>
+        <div class="section-title" style="margin-top:20px;">Applicant 1 – Employment</div>
+        <div class="form-grid">
+          <div class="field">
+            <label>Employment Type</label>
+            <select id="emp1" onchange="onInputChange()">
+              <option value="fulltime">Full-time</option>
+              <option value="parttime">Part-time</option>
+              <option value="casual">Casual</option>
+              <option value="contractor">Contractor</option>
+              <option value="selfemployed">Self-employed</option>
+            </select>
+          </div>
+        </div>
+        <div class="section-title" id="app2-section" style="display:none;">Applicant 2 – Employment</div>
+        <div class="form-grid" id="app2-emp" style="display:none;">
+          <div class="field">
+            <label>Employment Type</label>
+            <select id="emp2" onchange="onInputChange()">
+              <option value="fulltime">Full-time</option>
+              <option value="parttime">Part-time</option>
+              <option value="casual">Casual</option>
+              <option value="contractor">Contractor</option>
+              <option value="selfemployed">Self-employed</option>
+            </select>
+          </div>
+        </div>
+        <div class="section-title">Household</div>
+        <div class="form-grid">
+          <div class="field">
+            <label>Dependants</label>
+            <input type="number" id="dependants" value="0" min="0" max="10" onchange="onInputChange()">
+            <div class="field-hint">Children / dependants in household</div>
+          </div>
+          <div class="field">
+            <label>Living Situation</label>
+            <select id="livingSituation" onchange="onInputChange()">
+              <option value="renting">Renting</option>
+              <option value="owner">Owner Occupier</option>
+              <option value="family">Living with Family</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 1: INCOME -->
+      <div class="tab-content" id="tc-1">
+        <div class="alert alert-orange">Income shading applies lender-style discounts to non-base income. Adjust in Settings.</div>
+        <div class="section-title">Applicant 1 – Annual Income</div>
+        <div class="form-grid">
+          <div class="field">
+            <label>Base Salary <span class="badge badge-info">100%</span></label>
+            <div class="input-prefix-wrap"><span class="input-prefix">$</span><input type="number" id="base1" value="120000" min="0" onchange="onInputChange()"></div>
+          </div>
+          <div class="field">
+            <label>Bonus / Commission <span class="badge badge-info" id="shade-bonus">80%</span></label>
+            <div class="input-prefix-wrap"><span class="input-prefix">$</span><input type="number" id="bonus1" value="0" min="0" onchange="onInputChange()"></div>
+            <div class="field-hint">Gross annual amount</div>
+          </div>
+          <div class="field">
+            <label>Overtime <span class="badge badge-info" id="shade-ot">80%</span></label>
+            <div class="input-prefix-wrap"><span class="input-prefix">$</span><input type="number" id="ot1" value="0" min="0" onchange="onInputChange()"></div>
+          </div>
+          <div class="field">
+            <label>Rental Income <span class="badge badge-info" id="shade-rental">75%</span></label>
+            <div class="input-prefix-wrap"><span class="input-prefix">$</span><input type="number" id="rental1" value="0" min="0" onchange="onInputChange()"></div>
+            <div class="field-hint">Gross annual rental receipts</div>
+          </div>
+          <div class="field">
+            <label>Other Regular Income <span class="badge badge-info" id="shade-other">100%</span></label>
+            <div class="input-prefix-wrap"><span class="input-prefix">$</span><input type="number" id="other1" value="0" min="0" onchange="onInputChange()"></div>
+          </div>
+        </div>
+        <div id="income2-section" style="display:none;">
+          <div class="section-title">Applicant 2 – Annual Income</div>
+          <div class="form-grid">
+            <div class="field">
+              <label>Base Salary <span class="badge badge-info">100%</span></label>
+              <div class="input-prefix-wrap"><span class="input-prefix">$</span><input type="number" id="base2" value="80000" min="0" onchange="onInputChange()"></div>
+            </div>
+            <div class="field">
+              <label>Bonus / Commission</label>
+              <div class="input-prefix-wrap"><span class="input-prefix">$</span><input type="number" id="bonus2" value="0" min="0" onchange="onInputChange()"></div>
+            </div>
+            <div class="field">
+              <label>Overtime</label>
+              <div class="input-prefix-wrap"><span class="input-prefix">$</span><input type="number" id="ot2" value="0" min="0" onchange="onInputChange()"></div>
+            </div>
+            <div class="field">
+              <label>Rental Income</label>
+              <div class="input-prefix-wrap"><span class="input-prefix">$</span><input type="number" id="rental2" value="0" min="0" onchange="onInputChange()"></div>
+            </div>
+            <div class="field">
+              <label>Other Regular Income</label>
+              <div class="input-prefix-wrap"><span class="input-prefix">$</span><input type="number" id="other2" value="0" min="0" onchange="onInputChange()"></div>
+            </div>
+          </div>
+        </div>
+        <div class="section-title">HECS / HELP Debt</div>
+        <div class="toggle-row">
+          <div><div class="toggle-label">Has HECS/HELP debt</div><div class="toggle-sub">Compulsory repayments reduce net income</div></div>
+          <label class="toggle"><input type="checkbox" id="helpDebt" onchange="onInputChange()"><span class="toggle-slider"></span></label>
+        </div>
+        <div id="help-detail" style="display:none; margin-top:10px;">
+          <div class="field">
+            <label>HELP Balance Estimate ($)</label>
+            <div class="input-prefix-wrap"><span class="input-prefix">$</span><input type="number" id="helpBalance" value="30000" min="0" onchange="onInputChange()"></div>
+            <div class="field-hint">Used to estimate mandatory annual repayment</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 2: EXPENSES -->
+      <div class="tab-content" id="tc-2">
+        <div class="section-title">Monthly Living Expenses</div>
+        <div class="toggle-row">
+          <div><div class="toggle-label">Use benchmark expenses (HEM)</div><div class="toggle-sub">Higher of actual or benchmark is always used</div></div>
+          <label class="toggle"><input type="checkbox" id="useBenchmark" checked onchange="onInputChange()"><span class="toggle-slider"></span></label>
+        </div>
+        <div class="form-grid" style="margin-top:14px;">
+          <div class="field">
+            <label>Actual Monthly Living Expenses</label>
+            <div class="input-prefix-wrap"><span class="input-prefix">$</span><input type="number" id="actualExpenses" value="3500" min="0" onchange="onInputChange()"></div>
+            <div class="field-hint">All living costs excl. rent/mortgage & liabilities below</div>
+          </div>
+          <div class="field">
+            <label>Benchmark (HEM estimate)</label>
+            <div class="input-prefix-wrap"><span class="input-prefix">$</span><input type="number" id="benchmarkDisplay" value="0" readonly style="background:#F5F3F0; color:var(--text-muted);"></div>
+            <div class="field-hint">Applied if higher than actual — editable in Settings</div>
+          </div>
+        </div>
+        <div class="section-title">Additional Commitments</div>
+        <div class="form-grid">
+          <div class="field">
+            <label>Childcare Costs (monthly)</label>
+            <div class="input-prefix-wrap"><span class="input-prefix">$</span><input type="number" id="childcare" value="0" min="0" onchange="onInputChange()"></div>
+          </div>
+          <div class="field">
+            <label>Private School Fees (annual)</label>
+            <div class="input-prefix-wrap"><span class="input-prefix">$</span><input type="number" id="schoolFees" value="0" min="0" onchange="onInputChange()"></div>
+          </div>
+          <div class="field">
+            <label>Insurance & Commitments (monthly)</label>
+            <div class="input-prefix-wrap"><span class="input-prefix">$</span><input type="number" id="insurance" value="0" min="0" onchange="onInputChange()"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 3: LIABILITIES -->
+      <div class="tab-content" id="tc-3">
+        <div class="section-title">Credit Facilities</div>
+        <div class="form-grid">
+          <div class="field">
+            <label>Credit Card Limits (total)</label>
+            <div class="input-prefix-wrap"><span class="input-prefix">$</span><input type="number" id="ccLimit" value="10000" min="0" onchange="onInputChange()"></div>
+            <div class="field-hint">Total <strong>limit</strong> across all cards — not balance</div>
+          </div>
+          <div class="field">
+            <label>Buy Now Pay Later (monthly)</label>
+            <div class="input-prefix-wrap"><span class="input-prefix">$</span><input type="number" id="bnpl" value="0" min="0" onchange="onInputChange()"></div>
+          </div>
+        </div>
+        <div class="section-title">Loan Repayments</div>
+        <div class="form-grid">
+          <div class="field">
+            <label>Personal Loan (monthly repayment)</label>
+            <div class="input-prefix-wrap"><span class="input-prefix">$</span><input type="number" id="personalLoan" value="0" min="0" onchange="onInputChange()"></div>
+          </div>
+          <div class="field">
+            <label>Car Loan (monthly repayment)</label>
+            <div class="input-prefix-wrap"><span class="input-prefix">$</span><input type="number" id="carLoan" value="0" min="0" onchange="onInputChange()"></div>
+          </div>
+          <div class="field">
+            <label>Existing Mortgage (monthly repayment)</label>
+            <div class="input-prefix-wrap"><span class="input-prefix">$</span><input type="number" id="existingMortgage" value="0" min="0" onchange="onInputChange()"></div>
+          </div>
+          <div class="field">
+            <label>Other Monthly Commitments</label>
+            <div class="input-prefix-wrap"><span class="input-prefix">$</span><input type="number" id="otherCommit" value="0" min="0" onchange="onInputChange()"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 4: LOAN -->
+      <div class="tab-content" id="tc-4">
+        <div class="section-title">Property Details</div>
+        <div class="form-grid">
+          <div class="field">
+            <label>Property Value</label>
+            <div class="input-prefix-wrap"><span class="input-prefix">$</span><input type="number" id="propertyValue" value="800000" min="0" onchange="onInputChange()"></div>
+          </div>
+          <div class="field">
+            <label>Deposit / Equity</label>
+            <div class="input-prefix-wrap"><span class="input-prefix">$</span><input type="number" id="deposit" value="160000" min="0" onchange="onInputChange()"></div>
+            <div class="field-hint">Before stamp duty / costs</div>
+          </div>
+        </div>
+        <div class="section-title">Loan Parameters</div>
+        <div class="form-grid">
+          <div class="field">
+            <label>Loan Term (years)</label>
+            <input type="number" id="loanTerm" value="30" min="5" max="30" onchange="onInputChange()">
+          </div>
+          <div class="field">
+            <label>Interest Rate (% p.a.)</label>
+            <div class="input-suffix-wrap"><input type="number" id="interestRate" value="6.5" min="0" max="20" step="0.1" onchange="onInputChange()"><span class="input-suffix">%</span></div>
+          </div>
+          <div class="field">
+            <label>Assessment Buffer</label>
+            <div class="input-suffix-wrap"><input type="number" id="rateBuffer" value="3.0" min="0" max="5" step="0.1" onchange="onInputChange()"><span class="input-suffix">%</span></div>
+            <div class="field-hint">APRA minimum is 3% above actual rate</div>
+          </div>
+          <div class="field">
+            <label>Floor Rate</label>
+            <div class="input-suffix-wrap"><input type="number" id="floorRate" value="9.0" min="0" max="15" step="0.1" onchange="onInputChange()"><span class="input-suffix">%</span></div>
+            <div class="field-hint">Assessment rate won't fall below this</div>
+          </div>
+        </div>
+        <div class="section-title">Loan Purpose & Type</div>
+        <div class="form-grid">
+          <div class="field">
+            <label>Loan Purpose</label>
+            <div class="radio-group">
+              <div class="radio-btn"><input type="radio" name="loanPurpose" id="lp-oo" value="owner_occupier" checked onchange="onInputChange()"><label for="lp-oo">Owner Occupier</label></div>
+              <div class="radio-btn"><input type="radio" name="loanPurpose" id="lp-inv" value="investor" onchange="onInputChange()"><label for="lp-inv">Investor</label></div>
+            </div>
+          </div>
+          <div class="field">
+            <label>Repayment Type</label>
+            <div class="radio-group">
+              <div class="radio-btn"><input type="radio" name="repType" id="rt-pi" value="pi" checked onchange="onInputChange()"><label for="rt-pi">P&amp;I</label></div>
+              <div class="radio-btn"><input type="radio" name="repType" id="rt-io" value="io" onchange="onInputChange()"><label for="rt-io">Interest Only</label></div>
+            </div>
+          </div>
+        </div>
+        <div style="margin-top:16px; padding:12px; background:#F0F5FF; border-radius:8px; font-size:12px; color:var(--navy-light);">
+          <strong>Assessment Rate:</strong> <span id="assessRateDisplay">—</span> p.a. &nbsp;·&nbsp; 
+          max(rate + buffer, floor rate)
+        </div>
+      </div>
+    </div>
+
+    <!-- ACTIONS -->
+    <div style="display:flex; gap:10px; margin-top:12px; flex-wrap:wrap;">
+      <button class="btn-gold" onclick="runAIExplain()">✦ AI Explain My Result</button>
+      <button class="btn-ghost" onclick="saveScenario()">💾 Save as Scenario</button>
+      <button class="btn-ghost" onclick="scrollToCompare()">⇅ Compare Scenarios</button>
+    </div>
+  </div>
+
+  <!-- RIGHT PANEL: RESULTS -->
+  <div class="right-panel">
+    <div class="card results-sticky">
+      <!-- HERO -->
+      <div class="result-hero">
+        <div class="result-label">Estimated Borrowing Power</div>
+        <div class="result-amount" id="resultAmount">$0</div>
+        <div class="position-badge" id="positionBadge">
+          <div class="position-dot"></div>
+          <span id="positionText">Calculating…</span>
+        </div>
+      </div>
+
+      <!-- METRICS -->
+      <div class="metrics-grid">
+        <div class="metric-cell">
+          <div class="metric-name">Monthly Repayment</div>
+          <div class="metric-value" id="metricActualRep">—</div>
+          <div class="metric-sub" id="metricActualRepSub">At actual rate</div>
+        </div>
+        <div class="metric-cell">
+          <div class="metric-name">Assessed Repayment</div>
+          <div class="metric-value" id="metricAssessedRep">—</div>
+          <div class="metric-sub" id="metricAssessedRepSub">At assessment rate</div>
+        </div>
+        <div class="metric-cell">
+          <div class="metric-name">LVR</div>
+          <div class="metric-value" id="metricLVR">—</div>
+          <div class="metric-sub" id="metricLVRSub">Loan-to-value ratio</div>
+        </div>
+        <div class="metric-cell">
+          <div class="metric-name">DTI</div>
+          <div class="metric-value" id="metricDTI">—</div>
+          <div class="metric-sub">Max borrowing / income</div>
+        </div>
+        <div class="metric-cell">
+          <div class="metric-name">Net Monthly Income</div>
+          <div class="metric-value" id="metricNetIncome">—</div>
+          <div class="metric-sub">After tax estimate</div>
+        </div>
+        <div class="metric-cell">
+          <div class="metric-name">Monthly Surplus</div>
+          <div class="metric-value" id="metricSurplus">—</div>
+          <div class="metric-sub" id="metricSurplusSub">Enter property + deposit to see</div>
+        </div>
+      </div>
+
+      <!-- SURPLUS BAR -->
+      <div class="surplus-bar-wrap">
+        <div class="surplus-row">
+          <span style="font-size:12px;font-weight:600;color:var(--text-muted);">Income Allocation</span>
+        </div>
+        <div style="display:flex;gap:3px;margin-bottom:4px;">
+          <div style="height:8px;border-radius:4px;background:var(--green);transition:width 0.4s ease;" id="barSurplus"></div>
+          <div style="height:8px;border-radius:4px;background:#FFBB77;transition:width 0.4s ease;" id="barLoan"></div>
+          <div style="height:8px;border-radius:4px;background:#F08080;transition:width 0.4s ease;" id="barExp"></div>
+          <div style="height:8px;border-radius:4px;background:#CC8888;transition:width 0.4s ease;" id="barLiab"></div>
+        </div>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;">
+          <div style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--text-muted)"><div style="width:8px;height:8px;border-radius:2px;background:var(--green);"></div>Surplus</div>
+          <div style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--text-muted)"><div style="width:8px;height:8px;border-radius:2px;background:#FFBB77;"></div>New Loan</div>
+          <div style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--text-muted)"><div style="width:8px;height:8px;border-radius:2px;background:#F08080;"></div>Expenses</div>
+          <div style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--text-muted)"><div style="width:8px;height:8px;border-radius:2px;background:#CC8888;"></div>Liabilities</div>
+        </div>
+      </div>
+
+      <!-- FACTORS -->
+      <div class="factors-section">
+        <div class="factors-heading">✅ Helping Your Position</div>
+        <div id="factorsHelping"></div>
+        <div class="factors-heading" style="margin-top:12px;">⚠️ Reducing Your Position</div>
+        <div id="factorsHurting"></div>
+      </div>
+
+      <!-- AI EXPLANATION -->
+      <div class="ai-panel">
+        <div class="ai-header" onclick="toggleAIPanel()">
+          <div class="ai-dot"></div>
+          <div class="ai-title">AI Explanation</div>
+          <div style="flex:1"></div>
+          <span style="font-size:12px;color:var(--text-muted);" id="aiToggleLabel">▾ Show</span>
+        </div>
+        <div id="aiExplainBody" style="display:none;">
+          <div class="ai-body">
+            <div class="ai-text" id="aiExplainText">Click <strong>✦ AI Explain My Result</strong> below to get a plain-English breakdown of your borrowing position.</div>
+            <div id="aiRecsSection" style="display:none;">
+              <div class="factors-heading" style="margin-top:14px;">Suggested Improvements</div>
+              <div class="ai-recs" id="aiRecs"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SCENARIO COPILOT -->
+      <div class="copilot-section">
+        <div class="copilot-label">✦ Scenario Copilot — Ask a What-If</div>
+        <div class="copilot-chips">
+          <div class="copilot-chip" onclick="sendCopilot('What if I pay off my car loan?')">Pay off car loan</div>
+          <div class="copilot-chip" onclick="sendCopilot('What if I add a second income of $80,000?')">Add second income</div>
+          <div class="copilot-chip" onclick="sendCopilot('What if rates go up 1%?')">Rates up 1%</div>
+          <div class="copilot-chip" onclick="sendCopilot('What if I reduce credit card limits to zero?')">Remove CC limits</div>
+          <div class="copilot-chip" onclick="sendCopilot('What if I increase my deposit by $50,000?')">More deposit</div>
+        </div>
+        <div class="copilot-input-row">
+          <input class="copilot-input" id="copilotInput" placeholder="e.g. What if my salary increases to $150k?" onkeydown="if(event.key==='Enter')sendCopilot()">
+          <button class="btn-send" onclick="sendCopilot()">Ask →</button>
+        </div>
+        <div class="copilot-messages" id="copilotMessages"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SCENARIO COMPARISON -->
+<div class="main-container" style="padding-top:0;" id="scenarioAnchor">
+  <div style="grid-column:1/-1;">
+    <div class="scenario-section">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+        <div>
+          <div style="font-family:var(--font-display);font-size:20px;font-weight:600;color:var(--navy);">Scenario Comparison</div>
+          <div style="font-size:13px;color:var(--text-muted);margin-top:2px;">Compare up to 3 scenarios side by side. Adjust inputs and save each scenario.</div>
+        </div>
+        <button class="btn-ghost" onclick="resetScenarios()">Clear All Scenarios</button>
+      </div>
+      <div class="scenario-grid" id="scenarioGrid"></div>
+    </div>
+    <!-- CHART -->
+    <div class="chart-section">
+      <div class="card">
+        <div class="card-header"><div class="card-title">Scenario Breakdown Chart</div></div>
+        <div class="chart-container"><canvas id="mainChart"></canvas></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- EDUCATION -->
+<div class="main-container" style="padding-top:0;">
+  <div style="grid-column:1/-1;">
+    <div class="card education-section">
+      <div class="card-header"><div class="card-title">Understanding Your Results</div></div>
+      <div class="edu-item">
+        <button class="edu-toggle" onclick="toggleEdu(this)">What does serviceability mean? <span class="edu-arrow">▾</span></button>
+        <div class="edu-content">Serviceability is a lender's assessment of whether you can comfortably afford loan repayments given your income, expenses, and existing debts. Lenders don't just check if you can afford repayments at today's rate — they stress test your ability to repay at a higher assessment rate, ensuring you could still manage if rates rise.</div>
+      </div>
+      <div class="edu-item">
+        <button class="edu-toggle" onclick="toggleEdu(this)">Why is the assessment rate higher than the actual rate? <span class="edu-arrow">▾</span></button>
+        <div class="edu-content">APRA requires Australian lenders to add a minimum 3% buffer to the loan's actual rate when assessing affordability. This is a regulatory safeguard against rising interest rates. The assessment rate must also meet a floor rate (typically 9%+). Even if you can easily afford today's repayments, the lender calculates your capacity at this higher rate.</div>
+      </div>
+      <div class="edu-item">
+        <button class="edu-toggle" onclick="toggleEdu(this)">Why do credit card limits matter more than balances? <span class="edu-arrow">▾</span></button>
+        <div class="edu-content">Lenders assess your potential liability, not just current debt. If you have a $20,000 credit card limit, a lender assumes you could draw that limit to zero at any time — so they calculate a monthly repayment obligation against the full limit. Reducing or cancelling unused credit cards before applying can significantly improve your borrowing power.</div>
+      </div>
+      <div class="edu-item">
+        <button class="edu-toggle" onclick="toggleEdu(this)">Why do dependants and living expenses reduce borrowing power? <span class="edu-arrow">▾</span></button>
+        <div class="edu-content">Lenders use benchmark expense figures (HEM — Household Expenditure Measure) as a minimum floor. With more dependants, benchmarks rise substantially. Childcare, school fees, and other costs further reduce your monthly surplus. The lower your surplus after all commitments, the smaller the loan you can service at the assessment rate.</div>
+      </div>
+      <div class="edu-item">
+        <button class="edu-toggle" onclick="toggleEdu(this)">Why can't a bigger deposit always solve serviceability? <span class="edu-arrow">▾</span></button>
+        <div class="edu-content">A larger deposit reduces your LVR (Loan-to-Value Ratio) which is great for LMI avoidance and lender risk appetite — but it doesn't directly fix serviceability. Serviceability is about income capacity to repay. If your income doesn't support the assessed monthly repayment, a deposit can't substitute for that. Deposit helps LVR; income drives serviceability.</div>
+      </div>
+      <div class="edu-item">
+        <button class="edu-toggle" onclick="toggleEdu(this)">Why does borrowing power differ between lenders? <span class="edu-arrow">▾</span></button>
+        <div class="edu-content">Every lender applies their own credit policy — different HEM tables, different income shading rates, different credit card assessment rates, different buffers, and different risk appetites by property type and location. This calculator uses a simplified, common set of assumptions. A mortgage broker can compare actual lender policies across the market for your specific situation.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  <p><strong>BorrowScope — Estimated Borrowing Power Calculator</strong></p>
+  <p style="margin-top:6px;">This tool provides an estimate only, based on simplified, common Australian lender serviceability principles. It does not represent any specific lender, constitute financial advice, or guarantee credit approval. Actual borrowing power varies significantly by lender, credit profile, employment type, property characteristics, location, documentation quality, and applicable lender credit policy. Always consult a licensed mortgage broker or financial adviser for advice specific to your situation.</p>
+</div>
+
+<!-- SETTINGS MODAL -->
+<div class="modal-overlay" id="settingsModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Assumptions & Settings</div>
+      <button class="modal-close" onclick="closeSettings()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-section">
+        <div class="modal-section-title">AI API Key</div>
+        <div class="api-key-section">
+          <div class="api-key-label">Anthropic API Key (for AI features)</div>
+          <input class="api-key-input" type="password" id="apiKeyInput" placeholder="sk-ant-api03-...">
+          <div class="api-key-hint">Required only for AI Explain, AI Recommendations, and Scenario Copilot. Get yours at console.anthropic.com</div>
+        </div>
+      </div>
+      <div class="modal-section">
+        <div class="modal-section-title">Income Shading (%)</div>
+        <div class="form-grid">
+          <div class="field"><label>Base Salary</label><div class="input-suffix-wrap"><input type="number" id="s-base" value="100" min="0" max="100"><span class="input-suffix">%</span></div></div>
+          <div class="field"><label>Bonus / Commission</label><div class="input-suffix-wrap"><input type="number" id="s-bonus" value="80" min="0" max="100"><span class="input-suffix">%</span></div></div>
+          <div class="field"><label>Overtime</label><div class="input-suffix-wrap"><input type="number" id="s-ot" value="80" min="0" max="100"><span class="input-suffix">%</span></div></div>
+          <div class="field"><label>Rental Income</label><div class="input-suffix-wrap"><input type="number" id="s-rental" value="75" min="0" max="100"><span class="input-suffix">%</span></div></div>
+          <div class="field"><label>Other Income</label><div class="input-suffix-wrap"><input type="number" id="s-other" value="100" min="0" max="100"><span class="input-suffix">%</span></div></div>
+        </div>
+      </div>
+      <div class="modal-section">
+        <div class="modal-section-title">HEM Benchmark Monthly Expenses ($)</div>
+        <div style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">Higher of actual or benchmark is always applied.</div>
+        <div class="form-grid">
+          <div class="field"><label>Single, 0 dep</label><div class="input-prefix-wrap"><span class="input-prefix">$</span><input type="number" id="hem-s0" value="2000"></div></div>
+          <div class="field"><label>Single, 1 dep</label><div class="input-prefix-wrap"><span class="input-prefix">$</span><input type="number" id="hem-s1" value="2700"></div></div>
+          <div class="field"><label>Single, 2 dep</label><div class="input-prefix-wrap"><span class="input-prefix">$</span><input type="number" id="hem-s2" value="3200"></div></div>
+          <div class="field"><label>Single, 3+ dep</label><div class="input-prefix-wrap"><span class="input-prefix">$</span><input type="number" id="hem-s3" value="3700"></div></div>
+          <div class="field"><label>Couple, 0 dep</label><div class="input-prefix-wrap"><span class="input-prefix">$</span><input type="number" id="hem-c0" value="3200"></div></div>
+          <div class="field"><label>Couple, 1 dep</label><div class="input-prefix-wrap"><span class="input-prefix">$</span><input type="number" id="hem-c1" value="3900"></div></div>
+          <div class="field"><label>Couple, 2 dep</label><div class="input-prefix-wrap"><span class="input-prefix">$</span><input type="number" id="hem-c2" value="4400"></div></div>
+          <div class="field"><label>Couple, 3+ dep</label><div class="input-prefix-wrap"><span class="input-prefix">$</span><input type="number" id="hem-c3" value="4900"></div></div>
+        </div>
+      </div>
+      <div class="modal-section">
+        <div class="modal-section-title">Other Assumptions</div>
+        <div class="form-grid">
+          <div class="field"><label>Credit Card Monthly Rate (%)</label><div class="input-suffix-wrap"><input type="number" id="s-ccrate" value="3.8" step="0.1"><span class="input-suffix">%</span></div><div class="field-hint">Applied monthly to total CC limit</div></div>
+          <div class="field"><label>Min Monthly Surplus Buffer ($)</label><div class="input-prefix-wrap"><span class="input-prefix">$</span><input type="number" id="s-surplus" value="200"></div><div class="field-hint">Minimum surplus for a viable loan</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-ghost" onclick="resetAssumptions()">Reset Defaults</button>
+      <button class="btn-primary btn-sm" onclick="saveSettings()">Save Settings</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// CALCULATION ENGINE — PURE DETERMINISTIC FUNCTIONS
+// ============================================================
+
+function calcIncomeTax(income) {
+  if (income <= 0) return 0;
+  let tax = 0;
+  if (income <= 18200) tax = 0;
+  else if (income <= 45000) tax = (income - 18200) * 0.19;
+  else if (income <= 120000) tax = 5092 + (income - 45000) * 0.325;
+  else if (income <= 180000) tax = 29467 + (income - 120000) * 0.37;
+  else tax = 51667 + (income - 180000) * 0.45;
+
+  // LITO (Low Income Tax Offset)
+  let lito = 0;
+  if (income <= 37500) lito = 700;
+  else if (income <= 45000) lito = 700 - (income - 37500) * 0.05;
+  else if (income <= 66667) lito = 325 - (income - 45000) * 0.015;
+  tax = Math.max(0, tax - lito);
+
+  // Medicare Levy (simplified)
+  let medicare = 0;
+  if (income > 26000) medicare = income * 0.02;
+  else if (income > 21336) medicare = (income - 21336) * 0.10;
+
+  return tax + medicare;
+}
+
+function calcHELPRepayment(income) {
+  const tiers = [
+    [159664, 0.10], [150627, 0.095], [142101, 0.09], [134057, 0.085],
+    [126468, 0.08], [119310, 0.075], [112557, 0.07], [106186, 0.065],
+    [100175, 0.06], [94504, 0.055], [89155, 0.05], [84108, 0.045],
+    [79347, 0.04], [74856, 0.035], [70619, 0.03], [66618, 0.025],
+    [62850, 0.02], [54435, 0.01], [0, 0]
+  ];
+  for (const [threshold, rate] of tiers) {
+    if (income >= threshold) return income * rate;
+  }
+  return 0;
+}
+
+function calcMonthlyRepayment(principal, annualRatePct, years) {
+  if (principal <= 0 || years <= 0) return 0;
+  const r = annualRatePct / 100 / 12;
+  const n = years * 12;
+  if (r === 0) return principal / n;
+  return principal * r * Math.pow(1 + r, n) / (Math.pow(1 + r, n) - 1);
+}
+
+function calcIORepayment(principal, annualRatePct) {
+  if (principal <= 0) return 0;
+  return principal * (annualRatePct / 100) / 12;
+}
+
+function shadeIncome(inc, shading) {
+  return (parseFloat(inc.base) || 0) * shading.base / 100
+    + (parseFloat(inc.bonus) || 0) * shading.bonus / 100
+    + (parseFloat(inc.overtime) || 0) * shading.overtime / 100
+    + (parseFloat(inc.rental) || 0) * shading.rental / 100
+    + (parseFloat(inc.other) || 0) * shading.other / 100;
+}
+
+function getBenchmark(isJoint, dependants, hem) {
+  const deps = Math.min(dependants, 3);
+  const key = isJoint ? 'c' : 's';
+  const map = { s0: hem.s0, s1: hem.s1, s2: hem.s2, s3: hem.s3, c0: hem.c0, c1: hem.c1, c2: hem.c2, c3: hem.c3 };
+  return parseFloat(map[key + deps] || 2000);
+}
+
+function analyzeFactors(inputs, res, assumptions) {
+  const helping = [];
+  const hurting = [];
+
+  const totalIncome = res.totalAssessableIncome;
+  if (totalIncome >= 200000) helping.push({ text: `Very strong combined income (${fmt(totalIncome)} assessed)`, score: 3 });
+  else if (totalIncome >= 120000) helping.push({ text: `Solid income base (${fmt(totalIncome)} assessed)`, score: 2 });
+  else if (totalIncome >= 80000) helping.push({ text: `Adequate income (${fmt(totalIncome)} assessed)`, score: 1 });
+
+  if (inputs.isJoint) helping.push({ text: 'Joint application combining both incomes', score: 2 });
+
+  const ccMonthly = (parseFloat(inputs.ccLimit) || 0) * assumptions.ccRate / 100;
+  if (ccMonthly < 100 && (parseFloat(inputs.ccLimit) || 0) === 0) helping.push({ text: 'No credit card limits reducing borrowing power', score: 2 });
+
+  if (res.lvr !== null && res.lvr < 80) helping.push({ text: `Strong deposit — LVR ${res.lvr.toFixed(1)}% (below 80%)`, score: 2 });
+  else if (res.lvr !== null && res.lvr >= 80 && res.lvr <= 90) helping.push({ text: `Adequate deposit — LVR ${res.lvr.toFixed(1)}%`, score: 1 });
+
+  if (res.monthlyLiabilities < 300) helping.push({ text: 'Low existing debt commitments', score: 2 });
+
+  if (res.surplus > 2000) helping.push({ text: `Comfortable monthly surplus (${fmtM(res.surplus)})`, score: 2 });
+
+  // Hurting
+  if (ccMonthly > 300) hurting.push({ text: `Credit card limits (${fmt(inputs.ccLimit)}) assessed at ${fmtM(ccMonthly)}/month`, score: 3 });
+  else if (ccMonthly > 100) hurting.push({ text: `Credit card limits add ${fmtM(ccMonthly)}/month liability`, score: 2 });
+
+  const deps = parseInt(inputs.dependants) || 0;
+  if (deps >= 3) hurting.push({ text: `${deps} dependants significantly increase benchmark expenses`, score: 3 });
+  else if (deps > 0) hurting.push({ text: `${deps} dependant${deps > 1 ? 's' : ''} increasing household benchmark`, score: 2 });
+
+  const childcare = parseFloat(inputs.childcare) || 0;
+  if (childcare > 1500) hurting.push({ text: `High childcare costs (${fmtM(childcare)}/month)`, score: 2 });
+  else if (childcare > 500) hurting.push({ text: `Childcare costs (${fmtM(childcare)}/month)`, score: 1 });
+
+  const existingDebt = (parseFloat(inputs.personalLoan) || 0) + (parseFloat(inputs.carLoan) || 0) + (parseFloat(inputs.existingMortgage) || 0);
+  if (existingDebt > 2000) hurting.push({ text: `Existing loan repayments of ${fmtM(existingDebt)}/month`, score: 3 });
+  else if (existingDebt > 500) hurting.push({ text: `Existing loan repayments of ${fmtM(existingDebt)}/month`, score: 2 });
+
+  const rateGap = res.assessmentRate - inputs.interestRate;
+  if (rateGap >= 3) hurting.push({ text: `Assessment buffer adds ${rateGap.toFixed(1)}% to assessed rate (${res.assessmentRate.toFixed(2)}% total)`, score: 2 });
+
+  if (inputs.helpDebt) hurting.push({ text: `HECS/HELP repayment reduces net disposable income`, score: 2 });
+
+  const usedBenchmark = res.appliedExpenses > (parseFloat(inputs.actualExpenses) || 0);
+  if (usedBenchmark) hurting.push({ text: `HEM benchmark applied (higher than declared expenses)`, score: 1 });
+
+  if (res.lvr !== null && res.lvr > 95) hurting.push({ text: `High LVR (${res.lvr.toFixed(1)}%) — LMI likely required`, score: 2 });
+
+  helping.sort((a, b) => b.score - a.score);
+  hurting.sort((a, b) => b.score - a.score);
+
+  return { helping: helping.slice(0, 3), hurting: hurting.slice(0, 3) };
+}
+
+function runCalc(inputs, assumptions) {
+  // Assessable income
+  const inc1 = shadeIncome({ base: inputs.base1, bonus: inputs.bonus1, overtime: inputs.ot1, rental: inputs.rental1, other: inputs.other1 }, assumptions.shading);
+  const inc2 = inputs.isJoint ? shadeIncome({ base: inputs.base2, bonus: inputs.bonus2, overtime: inputs.ot2, rental: inputs.rental2, other: inputs.other2 }, assumptions.shading) : 0;
+  const totalAssessableIncome = inc1 + inc2;
+
+  // Tax
+  const tax1 = calcIncomeTax(inc1);
+  const tax2 = inputs.isJoint ? calcIncomeTax(inc2) : 0;
+  let netMonthlyIncome = (totalAssessableIncome - tax1 - tax2) / 12;
+
+  // HELP repayment
+  let helpRepayment = 0;
+  if (inputs.helpDebt) {
+    const rep1 = calcHELPRepayment(inc1);
+    const rep2 = inputs.isJoint ? calcHELPRepayment(inc2) : 0;
+    helpRepayment = (rep1 + rep2) / 12;
+    netMonthlyIncome -= helpRepayment;
+  }
+
+  // Expenses
+  const benchmark = getBenchmark(inputs.isJoint, parseInt(inputs.dependants) || 0, assumptions.hem);
+  const actualExp = parseFloat(inputs.actualExpenses) || 0;
+  const addlExp = (parseFloat(inputs.schoolFees) || 0) / 12 + (parseFloat(inputs.childcare) || 0) + (parseFloat(inputs.insurance) || 0);
+  const appliedExpenses = Math.max(actualExp, benchmark) + addlExp;
+
+  // Liabilities
+  const ccMonthly = (parseFloat(inputs.ccLimit) || 0) * assumptions.ccRate / 100;
+  const monthlyLiabilities = ccMonthly
+    + (parseFloat(inputs.personalLoan) || 0)
+    + (parseFloat(inputs.carLoan) || 0)
+    + (parseFloat(inputs.existingMortgage) || 0)
+    + (parseFloat(inputs.bnpl) || 0)
+    + (parseFloat(inputs.otherCommit) || 0);
+
+  // Assessment rate
+  const actualRate = parseFloat(inputs.interestRate) || 6.5;
+  const buffer = parseFloat(inputs.rateBuffer) || 3.0;
+  const floor = parseFloat(inputs.floorRate) || 9.0;
+  const assessmentRate = Math.max(actualRate + buffer, floor);
+
+  const isIO = inputs.repType === 'io';
+  const term = parseInt(inputs.loanTerm) || 30;
+
+  // ── MAX BORROWING POWER via binary search ──────────────────────
+  // Find the largest loan where monthly surplus ≥ minSurplus buffer.
+  // NOTE: at this exact loan amount surplus ≈ minSurplus by design.
+  // Surplus at max borrowing is NOT a useful display metric.
+  const minSurplus = assumptions.minSurplus;
+  let lo = 0, hi = 10000000, borrowingPower = 0;
+  for (let i = 0; i < 60; i++) {
+    const mid = (lo + hi) / 2;
+    const assessed = isIO ? calcIORepayment(mid, assessmentRate) : calcMonthlyRepayment(mid, assessmentRate, term);
+    const s = netMonthlyIncome - appliedExpenses - monthlyLiabilities - assessed;
+    if (s >= minSurplus) { borrowingPower = mid; lo = mid; }
+    else hi = mid;
+  }
+
+  // ── TARGET LOAN — what the user is actually trying to borrow ───
+  // LVR, monthly surplus, repayments, income bar and position
+  // are all calculated against the TARGET loan (property - deposit),
+  // not the theoretical maximum. This is the meaningful number.
+  const propVal = parseFloat(inputs.propertyValue) || 0;
+  const deposit = parseFloat(inputs.deposit) || 0;
+  const targetLoan = Math.max(0, propVal - deposit);
+
+  // LVR = target loan / property value (standard definition)
+  const lvr = propVal > 0 && targetLoan > 0 ? (targetLoan / propVal) * 100 : (propVal > 0 ? 0 : null);
+
+  // Repayments on target loan
+  const targetActualRepayment = isIO ? calcIORepayment(targetLoan, actualRate) : calcMonthlyRepayment(targetLoan, actualRate, term);
+  const targetAssessedRepayment = isIO ? calcIORepayment(targetLoan, assessmentRate) : calcMonthlyRepayment(targetLoan, assessmentRate, term);
+
+  // Monthly surplus at target loan — the meaningful surplus figure
+  const surplusAtTarget = netMonthlyIncome - appliedExpenses - monthlyLiabilities - targetAssessedRepayment;
+
+  // Repayments on max borrowing power (for display reference)
+  const actualRepayment = isIO ? calcIORepayment(borrowingPower, actualRate) : calcMonthlyRepayment(borrowingPower, actualRate, term);
+  const assessedRepayment = isIO ? calcIORepayment(borrowingPower, assessmentRate) : calcMonthlyRepayment(borrowingPower, assessmentRate, term);
+
+  // DTI based on max borrowing power (standard serviceability metric)
+  const dti = totalAssessableIncome > 0 ? borrowingPower / totalAssessableIncome : null;
+  // Target DTI — how many times income is the loan they're seeking
+  const targetDti = totalAssessableIncome > 0 && targetLoan > 0 ? targetLoan / totalAssessableIncome : null;
+
+  // Target feasibility
+  const targetFeasible = targetLoan === 0 || borrowingPower >= targetLoan;
+  const shortfall = targetFeasible ? 0 : targetLoan - borrowingPower;
+
+  // ── POSITION — based on target loan, not max borrowing ─────────
+  // Stronger: target loan affordable AND surplus healthy AND DTI reasonable
+  // Moderate: target loan affordable but tight, or max DTI moderate
+  // Constrained: target loan not affordable OR surplus very low
+  let position = 'stronger';
+  if (!targetFeasible || surplusAtTarget < 200) {
+    position = 'constrained';
+  } else if (surplusAtTarget < 800 || (dti !== null && dti > 6)) {
+    position = 'moderate';
+  }
+
+  const factors = analyzeFactors(inputs, {
+    totalAssessableIncome, monthlyLiabilities, lvr,
+    surplus: surplusAtTarget,   // factors now use target surplus — meaningful
+    assessmentRate, interestRate: actualRate, appliedExpenses,
+    targetFeasible, shortfall
+  }, assumptions);
+
+  return {
+    borrowingPower,
+    targetLoan,
+    targetFeasible,
+    shortfall,
+    actualRepayment,          // repayment on max borrowing
+    assessedRepayment,        // assessed repayment on max borrowing
+    targetActualRepayment,    // repayment on target loan at actual rate
+    targetAssessedRepayment,  // repayment on target loan at assessed rate
+    surplus: surplusAtTarget, // surplus at TARGET loan — the useful metric
+    lvr,                      // based on target loan / property value
+    dti,                      // max borrowing / annual income
+    targetDti,
+    position,
+    netMonthlyIncome,
+    appliedExpenses,
+    monthlyLiabilities,
+    totalAssessableIncome,
+    assessmentRate,
+    benchmark,
+    factors,
+    ccMonthly
+  };
+}
+
+// ============================================================
+// STATE
+// ============================================================
+
+const DEFAULT_ASSUMPTIONS = {
+  shading: { base: 100, bonus: 80, overtime: 80, rental: 75, other: 100 },
+  hem: { s0: 2000, s1: 2700, s2: 3200, s3: 3700, c0: 3200, c1: 3900, c2: 4400, c3: 4900 },
+  ccRate: 3.8,
+  minSurplus: 200
+};
+
+let assumptions = JSON.parse(JSON.stringify(DEFAULT_ASSUMPTIONS));
+let scenarios = [null, null, null]; // saved scenario results
+let scenarioInputs = [null, null, null];
+let scenarioNames = ['Scenario A', 'Scenario B', 'Scenario C'];
+let currentResult = null;
+let mainChart = null;
+let aiPanelOpen = false;
+let copilotConversation = [];
+
+// ============================================================
+// INPUTS READER
+// ============================================================
+
+function readInputs() {
+  const isJoint = document.getElementById('appJoint').checked;
+  return {
+    isJoint,
+    emp1: document.getElementById('emp1').value,
+    emp2: document.getElementById('emp2').value,
+    base1: document.getElementById('base1').value,
+    bonus1: document.getElementById('bonus1').value,
+    ot1: document.getElementById('ot1').value,
+    rental1: document.getElementById('rental1').value,
+    other1: document.getElementById('other1').value,
+    base2: document.getElementById('base2').value,
+    bonus2: document.getElementById('bonus2').value,
+    ot2: document.getElementById('ot2').value,
+    rental2: document.getElementById('rental2').value,
+    other2: document.getElementById('other2').value,
+    dependants: document.getElementById('dependants').value,
+    livingSituation: document.getElementById('livingSituation').value,
+    helpDebt: document.getElementById('helpDebt').checked,
+    actualExpenses: document.getElementById('actualExpenses').value,
+    childcare: document.getElementById('childcare').value,
+    schoolFees: document.getElementById('schoolFees').value,
+    insurance: document.getElementById('insurance').value,
+    ccLimit: document.getElementById('ccLimit').value,
+    bnpl: document.getElementById('bnpl').value,
+    personalLoan: document.getElementById('personalLoan').value,
+    carLoan: document.getElementById('carLoan').value,
+    existingMortgage: document.getElementById('existingMortgage').value,
+    otherCommit: document.getElementById('otherCommit').value,
+    propertyValue: document.getElementById('propertyValue').value,
+    deposit: document.getElementById('deposit').value,
+    loanTerm: document.getElementById('loanTerm').value,
+    interestRate: document.getElementById('interestRate').value,
+    rateBuffer: document.getElementById('rateBuffer').value,
+    floorRate: document.getElementById('floorRate').value,
+    loanPurpose: document.querySelector('input[name="loanPurpose"]:checked').value,
+    repType: document.querySelector('input[name="repType"]:checked').value,
+  };
+}
+
+function applyInputs(inputs) {
+  document.getElementById('appJoint').checked = inputs.isJoint;
+  document.getElementById('appSingle').checked = !inputs.isJoint;
+  document.getElementById('emp1').value = inputs.emp1 || 'fulltime';
+  document.getElementById('base1').value = inputs.base1 || 0;
+  document.getElementById('bonus1').value = inputs.bonus1 || 0;
+  document.getElementById('ot1').value = inputs.ot1 || 0;
+  document.getElementById('rental1').value = inputs.rental1 || 0;
+  document.getElementById('other1').value = inputs.other1 || 0;
+  document.getElementById('base2').value = inputs.base2 || 0;
+  document.getElementById('dependants').value = inputs.dependants || 0;
+  document.getElementById('ccLimit').value = inputs.ccLimit || 0;
+  document.getElementById('personalLoan').value = inputs.personalLoan || 0;
+  document.getElementById('carLoan').value = inputs.carLoan || 0;
+  document.getElementById('existingMortgage').value = inputs.existingMortgage || 0;
+  document.getElementById('actualExpenses').value = inputs.actualExpenses || 0;
+  document.getElementById('childcare').value = inputs.childcare || 0;
+  document.getElementById('interestRate').value = inputs.interestRate || 6.5;
+  document.getElementById('propertyValue').value = inputs.propertyValue || 0;
+  document.getElementById('deposit').value = inputs.deposit || 0;
+  onInputChange();
+}
+
+// ============================================================
+// UI RENDERING
+// ============================================================
+
+function fmt(n) {
+  if (n === null || n === undefined || isNaN(n)) return '—';
+  return '$' + Math.round(n).toLocaleString('en-AU');
+}
+function fmtM(n) { return '$' + Math.round(n).toLocaleString('en-AU'); }
+function fmtPct(n) { return n !== null ? n.toFixed(1) + '%' : '—'; }
+
+function renderResults(res) {
+  currentResult = res;
+  document.getElementById('resultAmount').textContent = fmt(res.borrowingPower);
+  document.getElementById('resultAmount').className = 'result-amount ' + res.position;
+
+  const badge = document.getElementById('positionBadge');
+  badge.className = 'position-badge ' + res.position;
+  const posLabels = { stronger: '↑ Stronger Position', moderate: '◈ Moderate Position', constrained: '↓ Constrained Position' };
+  document.getElementById('positionText').textContent = posLabels[res.position];
+
+  // Feasibility banner — show if a target property is set
+  let feasibilityEl = document.getElementById('feasibilityBanner');
+  if (!feasibilityEl) {
+    feasibilityEl = document.createElement('div');
+    feasibilityEl.id = 'feasibilityBanner';
+    feasibilityEl.style.cssText = 'padding:10px 20px;font-size:12px;font-weight:600;display:flex;align-items:center;gap:8px;border-top:1px solid rgba(255,255,255,0.1);';
+    document.querySelector('.result-hero').appendChild(feasibilityEl);
+  }
+  if (res.targetLoan > 0) {
+    if (res.targetFeasible) {
+      feasibilityEl.style.background = 'rgba(42,125,82,0.25)';
+      feasibilityEl.style.color = '#7FFFB0';
+      feasibilityEl.innerHTML = `✓ Target loan ${fmt(res.targetLoan)} is within your estimated borrowing power`;
+    } else {
+      feasibilityEl.style.background = 'rgba(184,50,50,0.25)';
+      feasibilityEl.style.color = '#FF9999';
+      feasibilityEl.innerHTML = `✗ Target loan ${fmt(res.targetLoan)} exceeds borrowing power by ${fmt(res.shortfall)}`;
+    }
+    feasibilityEl.style.display = 'flex';
+  } else {
+    feasibilityEl.style.display = 'none';
+  }
+
+  // Repayments — show for TARGET loan (meaningful to user), note max borrowing in sub-label
+  document.getElementById('metricActualRep').textContent = res.targetLoan > 0 ? fmtM(res.targetActualRepayment) : fmtM(res.actualRepayment);
+  document.getElementById('metricActualRepSub').textContent = res.targetLoan > 0 ? 'Target loan, actual rate' : 'At max borrowing, actual rate';
+  document.getElementById('metricAssessedRep').textContent = res.targetLoan > 0 ? fmtM(res.targetAssessedRepayment) : fmtM(res.assessedRepayment);
+  document.getElementById('metricAssessedRepSub').textContent = res.targetLoan > 0 ? 'Target loan, assessment rate' : 'At max borrowing, assessed rate';
+
+  // LVR — target loan / property value (correct definition)
+  document.getElementById('metricLVR').textContent = fmtPct(res.lvr);
+  document.getElementById('metricLVRSub').textContent = res.targetLoan > 0 ? `${fmt(res.targetLoan)} loan / ${fmt(parseFloat(document.getElementById('propertyValue').value))} property` : 'Loan-to-value ratio';
+
+  // DTI — max borrowing / annual income
+  document.getElementById('metricDTI').textContent = res.dti !== null ? res.dti.toFixed(1) + 'x' : '—';
+  document.getElementById('metricNetIncome').textContent = fmtM(res.netMonthlyIncome);
+
+  // Surplus — at TARGET loan (the meaningful number)
+  const surplusEl = document.getElementById('metricSurplus');
+  surplusEl.textContent = res.targetLoan > 0 ? fmtM(res.surplus) : '—';
+  surplusEl.style.color = res.surplus < 0 ? 'var(--red)' : res.surplus < 500 ? 'var(--orange)' : 'var(--green)';
+  document.getElementById('metricSurplusSub').textContent = res.targetLoan > 0
+    ? (res.surplus < 0 ? 'Shortfall — loan not serviceable' : 'After all commitments (target loan)')
+    : 'Enter property + deposit to see';
+
+  // Assessment rate display
+  document.getElementById('assessRateDisplay').textContent = res.assessmentRate.toFixed(2) + '%';
+
+  // Benchmark display
+  document.getElementById('benchmarkDisplay').value = Math.round(res.benchmark);
+
+  // Income allocation bar — use TARGET loan assessed repayment
+  // This shows how your income is actually allocated for THIS purchase
+  const refRepayment = res.targetLoan > 0 ? res.targetAssessedRepayment : res.assessedRepayment;
+  const total = Math.max(res.netMonthlyIncome, 1);
+  const loanPct = Math.min(refRepayment / total * 100, 75);
+  const expPct = Math.min(res.appliedExpenses / total * 100, 75);
+  const liabPct = Math.min(res.monthlyLiabilities / total * 100, 75);
+  const surplusPct = Math.max(0, 100 - loanPct - expPct - liabPct);
+  document.getElementById('barSurplus').style.width = surplusPct + '%';
+  document.getElementById('barLoan').style.width = loanPct + '%';
+  document.getElementById('barExp').style.width = expPct + '%';
+  document.getElementById('barLiab').style.width = liabPct + '%';
+
+  // Factors
+  const fhEl = document.getElementById('factorsHelping');
+  fhEl.innerHTML = res.factors.helping.length === 0
+    ? '<div class="factor-item" style="color:var(--text-light)">No strong positive factors identified.</div>'
+    : res.factors.helping.map(f => `<div class="factor-item"><div class="factor-icon help">✓</div>${f.text}</div>`).join('');
+
+  const ffEl = document.getElementById('factorsHurting');
+  ffEl.innerHTML = res.factors.hurting.length === 0
+    ? '<div class="factor-item" style="color:var(--text-light)">No major constraints identified.</div>'
+    : res.factors.hurting.map(f => `<div class="factor-item"><div class="factor-icon hurt">!</div>${f.text}</div>`).join('');
+}
+
+function renderScenarios() {
+  const grid = document.getElementById('scenarioGrid');
+  const baseRes = currentResult;
+  let html = '';
+
+  // Base card
+  html += `<div class="scenario-card base">
+    <div class="scenario-head base-head">
+      <div class="scenario-name">Base Case</div>
+      <span style="font-size:11px;color:rgba(255,255,255,0.6);">Current inputs</span>
+    </div>
+    ${baseRes ? `
+    <div class="scenario-amount">${fmt(baseRes.borrowingPower)}</div>
+    <div class="scenario-delta" style="color:var(--text-muted)">Reference</div>
+    <div class="scenario-metrics">
+      <div class="scenario-metric"><div class="scenario-metric-name">Target Repmt (actual rate)</div><div class="scenario-metric-val">${baseRes.targetLoan > 0 ? fmtM(baseRes.targetActualRepayment) : '—'}</div></div>
+      <div class="scenario-metric"><div class="scenario-metric-name">LVR (target loan)</div><div class="scenario-metric-val">${fmtPct(baseRes.lvr)}</div></div>
+      <div class="scenario-metric"><div class="scenario-metric-name">DTI (max borrowing)</div><div class="scenario-metric-val">${baseRes.dti !== null ? baseRes.dti.toFixed(1) + 'x' : '—'}</div></div>
+      <div class="scenario-metric"><div class="scenario-metric-name">Surplus (target loan)</div><div class="scenario-metric-val" style="color:${baseRes.surplus < 0 ? 'var(--red)' : baseRes.surplus < 500 ? 'var(--orange)' : 'var(--green)'}">${baseRes.targetLoan > 0 ? fmtM(baseRes.surplus) : '—'}</div></div>
+    </div>` : '<div style="padding:20px;font-size:13px;color:var(--text-muted)">Calculate above first.</div>'}
+    <div class="scenario-actions"><button class="btn-sm btn-primary" onclick="saveScenario(1)">Save as Scenario 1</button><button class="btn-sm btn-outline" onclick="saveScenario(2)">→ Scenario 2</button></div>
+  </div>`;
+
+  for (let i = 1; i <= 2; i++) {
+    const s = scenarios[i];
+    const base = baseRes ? baseRes.borrowingPower : 0;
+    const delta = s ? s.borrowingPower - base : null;
+    html += `<div class="scenario-card">
+      <div class="scenario-head">
+        <input class="scenario-edit-name" value="${scenarioNames[i]}" onchange="scenarioNames[${i}]=this.value">
+        <button class="btn-sm btn-outline" onclick="clearScenario(${i})" style="font-size:11px;padding:3px 8px;">Clear</button>
+      </div>
+      ${s ? `
+      <div class="scenario-amount">${fmt(s.borrowingPower)}</div>
+      <div class="scenario-delta ${delta >= 0 ? 'pos' : 'neg'}">${delta >= 0 ? '+' : ''}${fmt(delta)} vs base</div>
+      <div class="scenario-metrics">
+        <div class="scenario-metric"><div class="scenario-metric-name">Target Repmt (actual rate)</div><div class="scenario-metric-val">${s.targetLoan > 0 ? fmtM(s.targetActualRepayment) : '—'}</div></div>
+        <div class="scenario-metric"><div class="scenario-metric-name">LVR (target loan)</div><div class="scenario-metric-val">${fmtPct(s.lvr)}</div></div>
+        <div class="scenario-metric"><div class="scenario-metric-name">DTI (max borrowing)</div><div class="scenario-metric-val">${s.dti !== null ? s.dti.toFixed(1) + 'x' : '—'}</div></div>
+        <div class="scenario-metric"><div class="scenario-metric-name">Surplus (target loan)</div><div class="scenario-metric-val" style="color:${s.surplus < 0 ? 'var(--red)' : s.surplus < 500 ? 'var(--orange)' : 'var(--green)'}">${s.targetLoan > 0 ? fmtM(s.surplus) : '—'}</div></div>
+      </div>` : `<div style="padding:20px;font-size:13px;color:var(--text-muted)">Adjust inputs and save a scenario to compare.</div>`}
+      <div class="scenario-actions">
+        <button class="btn-sm btn-primary" onclick="saveScenario(${i})">Save Current Inputs</button>
+        ${s && scenarioInputs[i] ? `<button class="btn-sm btn-outline" onclick="loadScenario(${i})">Load</button>` : ''}
+      </div>
+    </div>`;
+  }
+  grid.innerHTML = html;
+  renderChart();
+}
+
+function renderChart() {
+  const ctx = document.getElementById('mainChart');
+  if (!ctx) return;
+  if (mainChart) mainChart.destroy();
+
+  const base = currentResult;
+  const s1 = scenarios[1];
+  const s2 = scenarios[2];
+
+  const labels = ['Base Case', scenarioNames[1] || 'Scenario 1', scenarioNames[2] || 'Scenario 2'];
+  const bpData = [base ? base.borrowingPower : 0, s1 ? s1.borrowingPower : 0, s2 ? s2.borrowingPower : 0];
+  const expData = [base ? base.appliedExpenses : 0, s1 ? s1.appliedExpenses : 0, s2 ? s2.appliedExpenses : 0];
+  const liabData = [base ? base.monthlyLiabilities : 0, s1 ? s1.monthlyLiabilities : 0, s2 ? s2.monthlyLiabilities : 0];
+  const incData = [base ? base.netMonthlyIncome : 0, s1 ? s1.netMonthlyIncome : 0, s2 ? s2.netMonthlyIncome : 0];
+
+  mainChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [
+        { label: 'Borrowing Power ($)', data: bpData, backgroundColor: 'rgba(28,53,87,0.8)', yAxisID: 'y1' },
+        { label: 'Net Monthly Income ($)', data: incData, backgroundColor: 'rgba(42,125,82,0.7)', yAxisID: 'y2' },
+        { label: 'Monthly Expenses ($)', data: expData, backgroundColor: 'rgba(240,128,128,0.7)', yAxisID: 'y2' },
+        { label: 'Monthly Liabilities ($)', data: liabData, backgroundColor: 'rgba(204,136,136,0.7)', yAxisID: 'y2' },
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { position: 'bottom', labels: { font: { family: 'DM Sans', size: 11 }, padding: 12 } }, tooltip: { callbacks: { label: ctx => ' ' + ctx.dataset.label + ': ' + '$' + Math.round(ctx.parsed.y).toLocaleString('en-AU') } } },
+      scales: {
+        y1: { type: 'linear', position: 'left', title: { display: true, text: 'Borrowing Power ($)', font: { size: 11 } }, ticks: { callback: v => '$' + (v / 1000).toFixed(0) + 'k', font: { size: 11 } } },
+        y2: { type: 'linear', position: 'right', grid: { drawOnChartArea: false }, title: { display: true, text: 'Monthly ($)', font: { size: 11 } }, ticks: { callback: v => '$' + v.toLocaleString(), font: { size: 11 } } },
+        x: { ticks: { font: { family: 'DM Sans', size: 12 } } }
+      }
+    }
+  });
+}
+
+// ============================================================
+// EVENT HANDLERS
+// ============================================================
+
+function onInputChange() {
+  const isJoint = document.getElementById('appJoint').checked;
+  document.getElementById('app2-section').style.display = isJoint ? '' : 'none';
+  document.getElementById('app2-emp').style.display = isJoint ? '' : 'none';
+  document.getElementById('income2-section').style.display = isJoint ? '' : 'none';
+  document.getElementById('help-detail').style.display = document.getElementById('helpDebt').checked ? '' : 'none';
+
+  // Update shading badges
+  document.getElementById('shade-bonus').textContent = assumptions.shading.bonus + '%';
+  document.getElementById('shade-ot').textContent = assumptions.shading.overtime + '%';
+  document.getElementById('shade-rental').textContent = assumptions.shading.rental + '%';
+  document.getElementById('shade-other').textContent = assumptions.shading.other + '%';
+
+  const inputs = readInputs();
+  try {
+    const res = runCalc(inputs, assumptions);
+    renderResults(res);
+    renderScenarios();
+  } catch(e) { console.error(e); }
+}
+
+function switchTab(idx) {
+  document.querySelectorAll('.tab').forEach((t, i) => t.classList.toggle('active', i === idx));
+  document.querySelectorAll('.tab-content').forEach((t, i) => t.classList.toggle('active', i === idx));
+}
+
+function toggleEdu(btn) {
+  btn.classList.toggle('open');
+  const content = btn.nextElementSibling;
+  content.classList.toggle('open');
+}
+
+function toggleAIPanel() {
+  aiPanelOpen = !aiPanelOpen;
+  document.getElementById('aiExplainBody').style.display = aiPanelOpen ? 'block' : 'none';
+  document.getElementById('aiToggleLabel').textContent = aiPanelOpen ? '▴ Hide' : '▾ Show';
+}
+
+function saveScenario(idx) {
+  if (!currentResult) return;
+  const i = (typeof idx === 'number') ? Math.min(Math.max(idx, 1), 2) : 1;
+  scenarios[i] = JSON.parse(JSON.stringify(currentResult));
+  scenarioInputs[i] = readInputs();
+  renderScenarios();
+  document.getElementById('scenarioAnchor').scrollIntoView({ behavior: 'smooth' });
+}
+
+function clearScenario(i) {
+  scenarios[i] = null;
+  scenarioInputs[i] = null;
+  renderScenarios();
+}
+
+function loadScenario(i) {
+  if (scenarioInputs[i]) applyInputs(scenarioInputs[i]);
+}
+
+function resetScenarios() {
+  scenarios = [null, null, null];
+  scenarioInputs = [null, null, null];
+  renderScenarios();
+}
+
+function scrollToCompare() {
+  document.getElementById('scenarioAnchor').scrollIntoView({ behavior: 'smooth' });
+}
+
+function resetAll() {
+  if (!confirm('Reset all inputs to defaults?')) return;
+  document.getElementById('appSingle').checked = true;
+  document.getElementById('base1').value = 120000;
+  document.getElementById('bonus1').value = 0;
+  document.getElementById('ot1').value = 0;
+  document.getElementById('rental1').value = 0;
+  document.getElementById('other1').value = 0;
+  document.getElementById('base2').value = 80000;
+  document.getElementById('dependants').value = 0;
+  document.getElementById('livingSituation').value = 'renting';
+  document.getElementById('helpDebt').checked = false;
+  document.getElementById('actualExpenses').value = 3500;
+  document.getElementById('childcare').value = 0;
+  document.getElementById('schoolFees').value = 0;
+  document.getElementById('insurance').value = 0;
+  document.getElementById('ccLimit').value = 10000;
+  document.getElementById('bnpl').value = 0;
+  document.getElementById('personalLoan').value = 0;
+  document.getElementById('carLoan').value = 0;
+  document.getElementById('existingMortgage').value = 0;
+  document.getElementById('otherCommit').value = 0;
+  document.getElementById('propertyValue').value = 800000;
+  document.getElementById('deposit').value = 160000;
+  document.getElementById('loanTerm').value = 30;
+  document.getElementById('interestRate').value = 6.5;
+  document.getElementById('rateBuffer').value = 3.0;
+  document.getElementById('floorRate').value = 9.0;
+  document.getElementById('lp-oo').checked = true;
+  document.getElementById('rt-pi').checked = true;
+  resetScenarios();
+  onInputChange();
+}
+
+// ============================================================
+// SETTINGS
+// ============================================================
+
+function openSettings() { document.getElementById('settingsModal').classList.add('open'); }
+function closeSettings() { document.getElementById('settingsModal').classList.remove('open'); }
+
+function saveSettings() {
+  assumptions.shading.base = parseFloat(document.getElementById('s-base').value) || 100;
+  assumptions.shading.bonus = parseFloat(document.getElementById('s-bonus').value) || 80;
+  assumptions.shading.overtime = parseFloat(document.getElementById('s-ot').value) || 80;
+  assumptions.shading.rental = parseFloat(document.getElementById('s-rental').value) || 75;
+  assumptions.shading.other = parseFloat(document.getElementById('s-other').value) || 100;
+  assumptions.hem.s0 = parseFloat(document.getElementById('hem-s0').value) || 2000;
+  assumptions.hem.s1 = parseFloat(document.getElementById('hem-s1').value) || 2700;
+  assumptions.hem.s2 = parseFloat(document.getElementById('hem-s2').value) || 3200;
+  assumptions.hem.s3 = parseFloat(document.getElementById('hem-s3').value) || 3700;
+  assumptions.hem.c0 = parseFloat(document.getElementById('hem-c0').value) || 3200;
+  assumptions.hem.c1 = parseFloat(document.getElementById('hem-c1').value) || 3900;
+  assumptions.hem.c2 = parseFloat(document.getElementById('hem-c2').value) || 4400;
+  assumptions.hem.c3 = parseFloat(document.getElementById('hem-c3').value) || 4900;
+  assumptions.ccRate = parseFloat(document.getElementById('s-ccrate').value) || 3.8;
+  assumptions.minSurplus = parseFloat(document.getElementById('s-surplus').value) || 200;
+  closeSettings();
+  onInputChange();
+}
+
+function resetAssumptions() {
+  assumptions = JSON.parse(JSON.stringify(DEFAULT_ASSUMPTIONS));
+  document.getElementById('s-base').value = 100;
+  document.getElementById('s-bonus').value = 80;
+  document.getElementById('s-ot').value = 80;
+  document.getElementById('s-rental').value = 75;
+  document.getElementById('s-other').value = 100;
+  document.getElementById('hem-s0').value = 2000;
+  document.getElementById('hem-s1').value = 2700;
+  document.getElementById('hem-s2').value = 3200;
+  document.getElementById('hem-s3').value = 3700;
+  document.getElementById('hem-c0').value = 3200;
+  document.getElementById('hem-c1').value = 3900;
+  document.getElementById('hem-c2').value = 4400;
+  document.getElementById('hem-c3').value = 4900;
+  document.getElementById('s-ccrate').value = 3.8;
+  document.getElementById('s-surplus').value = 200;
+}
+
+document.getElementById('settingsModal').addEventListener('click', function(e) {
+  if (e.target === this) closeSettings();
+});
+
+// ============================================================
+// AI LAYER
+// ============================================================
+
+function getApiKey() {
+  return document.getElementById('apiKeyInput').value.trim();
+}
+
+async function callAI(systemPrompt, userMessage) {
+  const apiKey = getApiKey();
+  if (!apiKey) throw new Error('No API key. Add your Anthropic API key in Settings (⚙).');
+  const response = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01' },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 800,
+      system: systemPrompt,
+      messages: [{ role: 'user', content: userMessage }]
+    })
+  });
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({}));
+    throw new Error(err.error?.message || `API error ${response.status}`);
+  }
+  const data = await response.json();
+  return data.content[0].text;
+}
+
+async function runAIExplain() {
+  if (!currentResult) { alert('Calculate first by entering your details.'); return; }
+  if (!aiPanelOpen) { aiPanelOpen = true; document.getElementById('aiExplainBody').style.display = 'block'; document.getElementById('aiToggleLabel').textContent = '▴ Hide'; }
+  
+  document.getElementById('aiExplainText').innerHTML = '<div class="ai-loading"><div class="ai-dot-anim"></div><div class="ai-dot-anim"></div><div class="ai-dot-anim"></div></div> Analysing your result…';
+  document.getElementById('aiRecsSection').style.display = 'none';
+  
+  const res = currentResult;
+  const inputs = readInputs();
+
+  const systemPrompt = `You are a plain-English explanation agent for an Australian borrowing power calculator. 
+You explain results clearly and helpfully. You do NOT perform calculations, invent lender policy, or imply approval.
+Keep your explanation to 2-3 concise sentences. Label your output as guidance only.
+Tone: clear, practical, non-alarming. Australian context.`;
+
+  const factors_h = res.factors.helping.map(f => f.text).join('; ');
+  const factors_hurt = res.factors.hurting.map(f => f.text).join('; ');
+  const userMsg = `Borrowing power: ${fmt(res.borrowingPower)}. Position: ${res.position}. 
+Net monthly income: ${fmtM(res.netMonthlyIncome)}. Monthly expenses: ${fmtM(res.appliedExpenses)}. 
+Monthly liabilities: ${fmtM(res.monthlyLiabilities)}. Monthly surplus: ${fmtM(res.surplus)}. 
+LVR: ${fmtPct(res.lvr)}. DTI: ${res.dti !== null ? res.dti.toFixed(1) + 'x' : 'N/A'}. 
+Assessment rate: ${res.assessmentRate.toFixed(2)}%. Joint: ${inputs.isJoint}. Dependants: ${inputs.dependants}.
+Helping factors: ${factors_h || 'none identified'}. 
+Hurting factors: ${factors_hurt || 'none identified'}.
+Please explain this result in plain English in 2-3 sentences.`;
+
+  try {
+    const explanation = await callAI(systemPrompt, userMsg);
+    document.getElementById('aiExplainText').innerHTML = `<em style="font-size:11px;color:var(--text-light);">AI Guidance — not financial advice</em><br><br>${explanation}`;
+    await runAIRecommendations(res, inputs);
+  } catch(e) {
+    document.getElementById('aiExplainText').innerHTML = `<span style="color:var(--red);">⚠ ${e.message}</span>`;
+  }
+}
+
+async function runAIRecommendations(res, inputs) {
+  const systemPrompt = `You are a recommendations agent for an Australian borrowing power calculator. 
+Generate 3-4 practical, specific suggestions to improve borrowing power based on the data provided.
+Return ONLY a JSON array of strings, no other text. Example: ["suggestion 1", "suggestion 2"]
+Keep each suggestion brief (1 sentence). No financial advice language. Mark as guidance only.`;
+
+  const factors_hurt = res.factors.hurting.map(f => f.text).join('; ');
+  const userMsg = `Main constraints: ${factors_hurt}. Position: ${res.position}. 
+CC limit: ${fmtM(inputs.ccLimit)}. Car loan: ${fmtM(inputs.carLoan)}/mo. Personal loan: ${fmtM(inputs.personalLoan)}/mo.
+Dependants: ${inputs.dependants}. Joint application: ${inputs.isJoint}. 
+Provide 3-4 specific improvement suggestions as a JSON array of strings.`;
+
+  try {
+    const raw = await callAI(systemPrompt, userMsg);
+    const clean = raw.replace(/```json|```/g, '').trim();
+    const recs = JSON.parse(clean);
+    document.getElementById('aiRecsSection').style.display = 'block';
+    document.getElementById('aiRecs').innerHTML = recs.map(r => `<div class="ai-rec">→ ${r}</div>`).join('');
+  } catch(e) {
+    console.error('Recommendations error:', e);
+  }
+}
+
+async function sendCopilot(preset) {
+  const inputEl = document.getElementById('copilotInput');
+  const query = preset || inputEl.value.trim();
+  if (!query) return;
+  inputEl.value = '';
+
+  const msgDiv = document.getElementById('copilotMessages');
+  msgDiv.innerHTML += `<div class="msg msg-user">${query}</div>`;
+  const thinkingId = 'thinking-' + Date.now();
+  msgDiv.innerHTML += `<div class="msg msg-ai" id="${thinkingId}"><div class="ai-loading"><div class="ai-dot-anim"></div><div class="ai-dot-anim"></div><div class="ai-dot-anim"></div></div></div>`;
+  msgDiv.scrollTop = msgDiv.scrollHeight;
+
+  const inputs = readInputs();
+  const systemPrompt = `You are a scenario interpreter for an Australian borrowing power calculator. 
+The user asks a "what if" question. Return ONLY a valid JSON object with:
+- "changes": object of input field names and new values to change (only the fields that change)
+- "description": brief plain-English description of what changed
+
+Available fields: base1 (salary app1 annual), bonus1, ot1, rental1, other1, base2 (salary app2 annual), 
+ccLimit (credit card limit total), personalLoan (monthly), carLoan (monthly), existingMortgage (monthly),
+interestRate (actual rate %), deposit, propertyValue, dependants, actualExpenses (monthly),
+isJoint (true/false), helpDebt (true/false)
+
+Return ONLY the JSON object, no markdown, no explanation.`;
+
+  const inputSummary = `Current inputs: salary=${inputs.base1}, joint=${inputs.isJoint}, salary2=${inputs.base2}, 
+ccLimit=${inputs.ccLimit}, carLoan=${inputs.carLoan}, personalLoan=${inputs.personalLoan}, 
+rate=${inputs.interestRate}, deposit=${inputs.deposit}, propertyValue=${inputs.propertyValue},
+dependants=${inputs.dependants}, expenses=${inputs.actualExpenses}.
+User question: "${query}"`;
+
+  try {
+    const raw = await callAI(systemPrompt, inputSummary);
+    const clean = raw.replace(/```json|```/g, '').trim();
+    const parsed = JSON.parse(clean);
+    
+    // Apply changes temporarily and calculate
+    const modInputs = { ...inputs };
+    Object.assign(modInputs, parsed.changes);
+    modInputs.isJoint = modInputs.isJoint === 'true' || modInputs.isJoint === true;
+    
+    const modResult = runCalc(modInputs, assumptions);
+    const base = currentResult ? currentResult.borrowingPower : 0;
+    const delta = modResult.borrowingPower - base;
+    const deltaStr = (delta >= 0 ? '+' : '') + fmt(delta);
+
+    const reply = `${parsed.description}\n\nScenario result: <strong>${fmt(modResult.borrowingPower)}</strong> (${deltaStr} vs current base). Monthly surplus: ${fmtM(modResult.surplus)}.`;
+    document.getElementById(thinkingId).innerHTML = reply;
+    msgDiv.scrollTop = msgDiv.scrollHeight;
+
+    // Offer to apply
+    if (Object.keys(parsed.changes).length > 0) {
+      document.getElementById(thinkingId).innerHTML += `<br><button onclick="applyScenarioChanges(${JSON.stringify(parsed.changes).replace(/"/g, '&quot;')})" style="margin-top:6px;padding:3px 10px;font-size:11px;background:var(--navy);color:white;border:none;border-radius:4px;cursor:pointer;">Apply these changes</button>`;
+    }
+  } catch(e) {
+    document.getElementById(thinkingId).innerHTML = `<span style="color:var(--red);">⚠ ${e.message}</span>`;
+  }
+}
+
+function applyScenarioChanges(changes) {
+  Object.entries(changes).forEach(([key, val]) => {
+    const el = document.getElementById(key);
+    if (el) {
+      if (el.type === 'checkbox') el.checked = val === true || val === 'true';
+      else el.value = val;
+    }
+    if (key === 'isJoint') {
+      document.getElementById('appJoint').checked = val === true || val === 'true';
+      document.getElementById('appSingle').checked = val === false || val === 'false';
+    }
+  });
+  onInputChange();
+}
+
+// ============================================================
+// INIT
+// ============================================================
+
+document.addEventListener('DOMContentLoaded', function() {
+  onInputChange();
+});
+</script>
 </body>
 </html>
