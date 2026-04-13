@@ -70,38 +70,51 @@ a, button, label, [role="button"], input, select, .tab, .copilot-chip, .edu-togg
 }
 
 /* ─── HEADER ──────────────────────────────────────────────────── */
-.header { background: linear-gradient(145deg, #070f1a 0%, #0d1f35 100%); color: white; padding: 0 20px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 16px rgba(0,0,0,0.4); }
-.header-inner { max-width: 1400px; margin: 0 auto; display: flex; align-items: center; gap: 14px; height: 64px; }
-.header-logo { font-family: 'Syne', system-ui, sans-serif; font-size: 24px; font-weight: 800; color: white; letter-spacing: -0.8px; white-space: nowrap; line-height: 1; }
+.header { background: linear-gradient(145deg, #070f1a 0%, #0d1f35 100%); color: white; padding: 0 16px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 16px rgba(0,0,0,0.4); }
+.header-inner { max-width: 1400px; margin: 0 auto; display: flex; align-items: center; gap: 10px; height: 58px; }
+.header-logo { font-family: 'Syne', system-ui, sans-serif; font-size: 22px; font-weight: 800; color: white; letter-spacing: -0.8px; white-space: nowrap; line-height: 1; }
 .header-logo span { background: var(--ai-grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
 .header-spacer { flex: 1; }
-.header-badge { background: var(--cta); border: none; color: white; font-size: 10px; font-weight: 700; padding: 4px 11px; border-radius: 20px; letter-spacing: 0.6px; text-transform: uppercase; white-space: nowrap; }
 .header-actions { display: flex; gap: 6px; }
-.btn-header { background: white; border: none; color: var(--blue); padding: 0 14px; height: 36px; border-radius: var(--radius-xs); font-size: 13px; font-weight: 600; font-family: var(--font-body); cursor: pointer; transition: opacity 0.15s; white-space: nowrap; display: flex; align-items: center; gap: 5px; }
+.btn-header { background: white; border: none; color: var(--blue); padding: 0 12px; height: 34px; border-radius: var(--radius-xs); font-size: 13px; font-weight: 600; font-family: var(--font-body); cursor: pointer; transition: opacity 0.15s; white-space: nowrap; display: flex; align-items: center; gap: 4px; }
 .btn-header:hover { opacity: 0.88; }
 .btn-header:active { opacity: 0.75; }
+.btn-header .btn-label { display: inline; }
+@media (max-width: 480px) { .btn-label { display: none !important; } .btn-header { padding: 0; width: 36px; justify-content: center; font-size: 16px; gap: 0; } }
 
 /* ─── DISCLAIMER ─────────────────────────────────────────────── */
-.disclaimer { background: #fffbeb; border-bottom: 1px solid #fde68a; padding: 8px 16px; font-size: 11.5px; color: #92400e; text-align: center; line-height: 1.5; }
-.disclaimer strong { color: #78350f; }
+.disclaimer { background: #2a0e00; border-bottom: 1px solid rgba(194,65,12,0.25); padding: 7px 16px; font-size: 11.5px; color: rgba(255,200,160,0.75); text-align: center; line-height: 1.5; }
+.disclaimer strong { color: #f97316; }
 
 /* ─── LAYOUT ──────────────────────────────────────────────────── */
-.main-container { max-width: 1400px; margin: 0 auto; padding: 20px 16px; display: grid; grid-template-columns: minmax(0,1fr) 400px; gap: 20px; align-items: start; }
+.main-container { max-width: 1400px; margin: 0 auto; padding: 16px; display: grid; grid-template-columns: minmax(0,1fr) 400px; gap: 20px; align-items: start; }
 @media (max-width: 1024px) { .main-container { grid-template-columns: 1fr; padding: 12px; gap: 14px; display: flex; flex-direction: column; } }
 
 /* ─── CARDS ───────────────────────────────────────────────────── */
 .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow-sm); overflow: hidden; }
-.card-header { padding: 16px 20px 13px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
+.card-header { padding: 16px 20px 13px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; position: relative; }
+.card-header:not(.card-header--dark)::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--ai-grad); }
+.card-header--dark { background: linear-gradient(145deg, #070f1a 0%, #0d1f35 100%); border-bottom-color: rgba(255,255,255,0.08); }
+.card-header--dark .card-title { color: white; -webkit-text-fill-color: white; background: none; }
 .card-title { font-size: 15px; font-weight: 700; color: var(--blue); letter-spacing: -0.2px; }
 
-/* ─── TABS ────────────────────────────────────────────────────── */
-.tabs { display: flex; background: var(--surface); border-bottom: 1px solid var(--border); overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; gap: 4px; padding: 8px 12px; }
-.tabs::-webkit-scrollbar { display: none; }
-.tab { padding: 0 14px; height: 36px; display: flex; align-items: center; font-size: 13px; font-weight: 500; color: var(--text-muted); cursor: pointer; border-radius: var(--radius-xs); white-space: nowrap; transition: all 0.15s; flex-shrink: 0; background: var(--bg); border: none; }
-.tab:hover { color: var(--blue); background: var(--blue-pale); }
-.tab.active { color: white; background: var(--ai-grad); font-weight: 600; }
-.tab-content { display: none; padding: 20px 16px; }
-.tab-content.active { display: block; }
+/* ─── INPUT ACCORDIONS ────────────────────────────────────────── */
+.input-accord { border-bottom: 1px solid var(--border); }
+.input-accord:last-child { border-bottom: none; }
+.input-accord-trigger { width: 100%; padding: 0 18px; min-height: 62px; display: flex; align-items: center; gap: 12px; background: none; border: none; cursor: pointer; font-family: var(--font-body); text-align: left; transition: background 0.2s; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+.input-accord-trigger:hover { background: var(--bg); }
+.input-accord-trigger[aria-expanded="true"] { background: var(--ai-grad); }
+.ia-num { width: 26px; height: 26px; border-radius: 50%; background: var(--blue-pale); color: var(--blue); font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.2s; }
+.input-accord-trigger[aria-expanded="true"] .ia-num { background: rgba(255,255,255,0.2); color: white; }
+.ia-text { flex: 1; min-width: 0; }
+.ia-title { font-size: 14px; font-weight: 600; color: var(--text); line-height: 1.2; transition: color 0.2s; }
+.ia-hint { font-size: 11.5px; color: var(--text-muted); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: color 0.2s; }
+.input-accord-trigger[aria-expanded="true"] .ia-title { color: white; }
+.input-accord-trigger[aria-expanded="true"] .ia-hint { color: rgba(255,255,255,0.65); }
+.ia-chevron { width: 18px; height: 18px; flex-shrink: 0; color: var(--text-light); transition: transform 0.22s ease, color 0.2s; }
+.input-accord-trigger[aria-expanded="true"] .ia-chevron { transform: rotate(180deg); color: rgba(255,255,255,0.8); }
+.input-accord-body { display: none; padding: 20px 18px 24px; }
+.input-accord-body.open { display: block; }
 
 /* ─── FORMS ───────────────────────────────────────────────────── */
 .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
@@ -236,7 +249,6 @@ input[type=number] { -moz-appearance: textfield; }
 .btn-send:active { transform: scale(0.98); }
 
 /* ─── SCENARIO ────────────────────────────────────────────────── */
-.scenario-section { margin-top: 20px; }
 .scenario-section-wrap { margin-top: 20px; }
 .scenario-section-title { font-size: 18px; font-weight: 700; color: var(--text); letter-spacing: -0.3px; }
 .scenario-section-sub { font-size: 13px; color: var(--text-muted); margin-top: 3px; }
@@ -244,59 +256,48 @@ input[type=number] { -moz-appearance: textfield; }
 .scenario-clear-btn:hover { border-color: var(--blue); color: var(--blue); }
 .scenario-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; margin-top: 14px; }
 @media (max-width: 900px) { .scenario-grid { grid-template-columns: 1fr; gap: 10px; } }
-.scenario-card { background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius); overflow: hidden; }
-.scenario-card.base { border-color: transparent; background: linear-gradient(var(--surface), var(--surface)) padding-box, var(--ai-grad) border-box; }
-.scenario-head { padding: 13px 16px; background: var(--bg); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; min-height: 50px; }
-.scenario-name { font-size: 13px; font-weight: 700; color: var(--blue); }
-.scenario-edit-name { border: none; background: transparent; font-size: 13px; font-weight: 700; color: var(--blue); font-family: var(--font-body); outline: none; width: 130px; cursor: text; min-height: 36px; }
-.scenario-head.base-head { background: linear-gradient(145deg, #070f1a 0%, #0d1f35 100%); border-bottom-color: rgba(255,255,255,0.1); }
+
+/* Card shell */
+.scenario-card { background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius); overflow: hidden; display: flex; flex-direction: column; }
+.scenario-card.base { border: 1.5px solid #0d1f35; }
+
+/* Header — fixed height, consistent across all cards */
+.scenario-head { height: 52px; padding: 0 16px; background: var(--bg); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-shrink: 0; }
+.scenario-head.base-head { background: linear-gradient(145deg, #070f1a 0%, #0d1f35 100%); border-bottom: 1px solid rgba(255,255,255,0.1); }
+.scenario-name { font-size: 13px; font-weight: 700; color: var(--blue); white-space: nowrap; }
 .scenario-head.base-head .scenario-name { color: white; }
-.scenario-amount { font-family: var(--font-mono); font-size: 24px; font-weight: 500; color: var(--blue); padding: 16px 16px 4px; letter-spacing: -0.5px; }
-.scenario-delta { font-size: 12px; font-weight: 600; padding: 0 16px 14px; }
+.scenario-head-sub { font-size: 11px; color: rgba(255,255,255,0.5); white-space: nowrap; }
+.scenario-edit-name { flex: 1; border: none; background: transparent; font-size: 13px; font-weight: 700; color: var(--blue); font-family: var(--font-body); outline: none; min-width: 0; cursor: text; }
+
+/* Amount + delta — fixed heights */
+.scenario-amount { font-family: var(--font-mono); font-size: 24px; font-weight: 600; color: var(--blue); -webkit-text-fill-color: var(--blue); background: none; padding: 16px 16px 2px; letter-spacing: -0.5px; flex-shrink: 0; }
+.scenario-amount.empty { opacity: 0.25; }
+.scenario-delta { font-size: 12px; font-weight: 600; padding: 3px 16px 12px; flex-shrink: 0; color: var(--text-muted); }
 .scenario-delta.pos { color: var(--green); }
 .scenario-delta.neg { color: var(--red); }
-.scenario-metrics { padding: 13px 16px; border-top: 1px solid var(--border); display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.scenario-metric-name { font-size: 10.5px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; }
+
+/* Metrics — fixed 2×2 grid */
+.scenario-metrics { padding: 12px 16px; border-top: 1px solid var(--border); display: grid; grid-template-columns: 1fr 1fr; gap: 10px; flex-shrink: 0; }
+.scenario-metrics.empty { opacity: 0.25; }
+.scenario-metric-name { font-size: 10px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 2px; }
 .scenario-metric-val { font-family: var(--font-mono); font-size: 14px; font-weight: 500; color: var(--text); }
-.scenario-actions { padding: 13px 16px; border-top: 1px solid var(--border); display: flex; gap: 8px; flex-wrap: wrap; }
-.btn-sm { padding: 0 16px; height: 40px; border-radius: var(--radius-xs); font-size: 13px; font-weight: 600; cursor: pointer; border: 1.5px solid; transition: all 0.15s; font-family: var(--font-body); display: inline-flex; align-items: center; }
+
+/* Actions — no wrap, fixed height footer */
+.scenario-actions { padding: 12px 16px; border-top: 1px solid var(--border); display: flex; gap: 8px; align-items: center; flex-shrink: 0; margin-top: auto; }
+.scenario-actions .btn-sm { flex: 1; justify-content: center; min-width: 0; white-space: nowrap; }
+.scenario-actions .btn-sm.secondary { flex: 0 0 auto; }
+
+.btn-sm { padding: 0 14px; height: 40px; border-radius: var(--radius-xs); font-size: 12px; font-weight: 600; cursor: pointer; border: 1.5px solid; transition: all 0.15s; font-family: var(--font-body); display: inline-flex; align-items: center; justify-content: center; }
 .btn-outline { border-color: var(--border); background: transparent; color: var(--text-muted); }
 .btn-outline:hover { border-color: var(--blue); color: var(--blue); }
 .btn-outline:active { background: var(--blue-ghost); }
-.btn-primary { border-color: transparent; background: var(--ai-grad); color: white; }
-.btn-primary:hover { opacity: 0.88; }
+.btn-primary { border-color: var(--cta); background: var(--cta); color: white; }
+.btn-primary:hover { background: var(--cta-dark); border-color: var(--cta-dark); }
 .btn-primary:active { transform: scale(0.98); }
 .copilot-messages { max-height: 260px; overflow-y: auto; -webkit-overflow-scrolling: touch; margin-top: 12px; display: flex; flex-direction: column; gap: 8px; }
 .msg { padding: 10px 14px; font-size: 13.5px; line-height: 1.55; max-width: 88%; }
 .msg-user { background: var(--blue); color: white; border-radius: 14px 14px 4px 14px; align-self: flex-end; }
 .msg-ai { background: var(--blue-ghost); border: 1px solid var(--blue-pale); color: var(--text); border-radius: 14px 14px 14px 4px; }
-
-/* ─── SCENARIO ────────────────────────────────────────────────── */
-.scenario-section { margin-top: 20px; }
-.scenario-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; margin-top: 14px; }
-@media (max-width: 900px) { .scenario-grid { grid-template-columns: 1fr; gap: 10px; } }
-.scenario-card { background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius); overflow: hidden; }
-.scenario-card.base { border-color: var(--blue); }
-.scenario-head { padding: 13px 16px; background: var(--bg); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; min-height: 50px; }
-.scenario-name { font-size: 13px; font-weight: 700; color: var(--blue); }
-.scenario-edit-name { border: none; background: transparent; font-size: 13px; font-weight: 700; color: var(--blue); font-family: var(--font-body); outline: none; width: 130px; cursor: text; min-height: 36px; }
-.scenario-head.base-head { background: var(--blue); }
-.scenario-head.base-head .scenario-name { color: white; }
-.scenario-amount { font-family: var(--font-mono); font-size: 24px; font-weight: 500; color: var(--blue); padding: 16px 16px 4px; letter-spacing: -0.5px; }
-.scenario-delta { font-size: 12px; font-weight: 600; padding: 0 16px 14px; }
-.scenario-delta.pos { color: var(--green); }
-.scenario-delta.neg { color: var(--red); }
-.scenario-metrics { padding: 13px 16px; border-top: 1px solid var(--border); display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.scenario-metric-name { font-size: 10.5px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; }
-.scenario-metric-val { font-family: var(--font-mono); font-size: 14px; font-weight: 500; color: var(--text); }
-.scenario-actions { padding: 13px 16px; border-top: 1px solid var(--border); display: flex; gap: 8px; flex-wrap: wrap; }
-.btn-sm { padding: 0 16px; height: 40px; border-radius: var(--radius-xs); font-size: 13px; font-weight: 600; cursor: pointer; border: 1.5px solid; transition: all 0.15s; font-family: var(--font-body); display: inline-flex; align-items: center; }
-.btn-outline { border-color: var(--border); background: transparent; color: var(--text-muted); }
-.btn-outline:hover { border-color: var(--blue); color: var(--blue); }
-.btn-outline:active { background: var(--blue-ghost); }
-.btn-primary { border-color: var(--blue); background: var(--blue); color: white; }
-.btn-primary:hover { background: var(--blue-mid); border-color: var(--blue-mid); }
-.btn-primary:active { transform: scale(0.98); }
 
 /* ─── GRADIENT ACCENT SYSTEM ──────────────────────────────────── */
 /* Gradient text utility */
@@ -336,7 +337,7 @@ input[type=number] { -moz-appearance: textfield; }
 .result-amount.moderate   { -webkit-text-fill-color: #fcd34d !important; }
 .result-amount.stronger   { -webkit-text-fill-color: #6ee7b7 !important; }
 /* Scenario amounts */
-.scenario-amount { background: var(--ai-grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.scenario-amount { font-family: var(--font-mono); font-size: 24px; font-weight: 600; color: var(--blue); -webkit-text-fill-color: var(--blue); background: none; }
 .chart-section { margin-top: 20px; }
 .chart-container { position: relative; height: 240px; padding: 20px; }
 
@@ -426,280 +427,322 @@ input[type=number] { -moz-appearance: textfield; }
 <header class="header">
   <div class="header-inner">
     <div class="header-logo">Borrow<span>Scope</span></div>
-    <div class="header-badge">Estimate Only</div>
     <div class="header-spacer"></div>
     <div class="header-actions">
-      <button class="btn-header" onclick="openSettings()">⚙ Settings</button>
-      <button class="btn-header" onclick="resetAll()">↺ Reset</button>
+      <button class="btn-header" onclick="openSettings()"><span>⚙</span><span class="btn-label"> Settings</span></button>
+      <button class="btn-header" onclick="resetAll()"><span>↺</span><span class="btn-label"> Reset</span></button>
     </div>
   </div>
 </header>
 
 <!-- DISCLAIMER -->
 <div class="disclaimer">
-  <strong>Estimate only.</strong> Not financial advice, not a credit approval, and not representative of any specific lender's policy. Based on common Australian lender serviceability principles. Actual outcomes vary by lender, credit profile, and property type.
+  <strong>Estimate only.</strong> Not financial advice, not a credit approval, and not representative of any specific lender's policy. Based on common Australian lender serviceability principles.
 </div>
 
 <!-- MAIN -->
 <div class="main-container">
 
-  <!-- LEFT PANEL: FORM — order:1 on mobile -->
+  <!-- LEFT PANEL: FORM -->
   <div class="left-panel">
     <div class="card">
-      <div class="tabs" role="tablist">
-        <div class="tab active" onclick="switchTab(0)" id="tab-0">👤 Applicant</div>
-        <div class="tab" onclick="switchTab(1)" id="tab-1">💰 Income</div>
-        <div class="tab" onclick="switchTab(2)" id="tab-2">🧾 Expenses</div>
-        <div class="tab" onclick="switchTab(3)" id="tab-3">📋 Liabilities</div>
-        <div class="tab" onclick="switchTab(4)" id="tab-4">🏡 Loan</div>
+
+      <!-- ACCORDION 1: APPLICANT -->
+      <div class="input-accord">
+        <button class="input-accord-trigger" id="ia-trigger-0" aria-expanded="true" onclick="toggleInputAccord(0)">
+          <div class="ia-num">1</div>
+          <div class="ia-text">
+            <div class="ia-title">Applicant</div>
+            <div class="ia-hint" id="ia-hint-0">Application type &amp; employment</div>
+          </div>
+          <svg class="ia-chevron" viewBox="0 0 20 20" fill="none"><path d="M5 7.5l5 5 5-5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="input-accord-body open" id="ia-body-0">
+          <div class="section-title">Application Type</div>
+          <div class="radio-group">
+            <div class="radio-btn"><input type="radio" name="appType" id="appSingle" value="single" checked onchange="onInputChange()"><label for="appSingle">Single</label></div>
+            <div class="radio-btn"><input type="radio" name="appType" id="appJoint" value="joint" onchange="onInputChange()"><label for="appJoint">Joint</label></div>
+          </div>
+          <div class="section-title" style="margin-top:20px;">Applicant 1 – Employment</div>
+          <div class="form-grid">
+            <div class="field">
+              <label>Employment Type</label>
+              <select id="emp1" onchange="onInputChange()">
+                <option value="fulltime">Full-time</option>
+                <option value="parttime">Part-time</option>
+                <option value="casual">Casual</option>
+                <option value="contractor">Contractor</option>
+                <option value="selfemployed">Self-employed</option>
+              </select>
+            </div>
+          </div>
+          <div class="section-title" id="app2-section" style="display:none;">Applicant 2 – Employment</div>
+          <div class="form-grid" id="app2-emp" style="display:none;">
+            <div class="field">
+              <label>Employment Type</label>
+              <select id="emp2" onchange="onInputChange()">
+                <option value="fulltime">Full-time</option>
+                <option value="parttime">Part-time</option>
+                <option value="casual">Casual</option>
+                <option value="contractor">Contractor</option>
+                <option value="selfemployed">Self-employed</option>
+              </select>
+            </div>
+          </div>
+          <div class="section-title">Household</div>
+          <div class="form-grid">
+            <div class="field">
+              <label>Dependants</label>
+              <input type="number" id="dependants" value="0" min="0" max="10" onchange="onInputChange()">
+              <div class="field-hint">Children / dependants in household</div>
+            </div>
+            <div class="field">
+              <label>Living Situation</label>
+              <select id="livingSituation" onchange="onInputChange()">
+                <option value="renting">Renting</option>
+                <option value="owner">Owner Occupier</option>
+                <option value="family">Living with Family</option>
+              </select>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <!-- TAB 0: APPLICANT -->
-      <div class="tab-content active" id="tc-0">
-        <div class="section-title">Application Type</div>
-        <div class="radio-group">
-          <div class="radio-btn"><input type="radio" name="appType" id="appSingle" value="single" checked onchange="onInputChange()"><label for="appSingle">Single</label></div>
-          <div class="radio-btn"><input type="radio" name="appType" id="appJoint" value="joint" onchange="onInputChange()"><label for="appJoint">Joint</label></div>
-        </div>
-        <div class="section-title" style="margin-top:20px;">Applicant 1 – Employment</div>
-        <div class="form-grid">
-          <div class="field">
-            <label>Employment Type</label>
-            <select id="emp1" onchange="onInputChange()">
-              <option value="fulltime">Full-time</option>
-              <option value="parttime">Part-time</option>
-              <option value="casual">Casual</option>
-              <option value="contractor">Contractor</option>
-              <option value="selfemployed">Self-employed</option>
-            </select>
+      <!-- ACCORDION 2: INCOME -->
+      <div class="input-accord">
+        <button class="input-accord-trigger" id="ia-trigger-1" aria-expanded="false" onclick="toggleInputAccord(1)">
+          <div class="ia-num">2</div>
+          <div class="ia-text">
+            <div class="ia-title">Income</div>
+            <div class="ia-hint" id="ia-hint-1">Salary, bonus, rental &amp; other income</div>
           </div>
-        </div>
-        <div class="section-title" id="app2-section" style="display:none;">Applicant 2 – Employment</div>
-        <div class="form-grid" id="app2-emp" style="display:none;">
-          <div class="field">
-            <label>Employment Type</label>
-            <select id="emp2" onchange="onInputChange()">
-              <option value="fulltime">Full-time</option>
-              <option value="parttime">Part-time</option>
-              <option value="casual">Casual</option>
-              <option value="contractor">Contractor</option>
-              <option value="selfemployed">Self-employed</option>
-            </select>
-          </div>
-        </div>
-        <div class="section-title">Household</div>
-        <div class="form-grid">
-          <div class="field">
-            <label>Dependants</label>
-            <input type="number" id="dependants" value="0" min="0" max="10" onchange="onInputChange()">
-            <div class="field-hint">Children / dependants in household</div>
-          </div>
-          <div class="field">
-            <label>Living Situation</label>
-            <select id="livingSituation" onchange="onInputChange()">
-              <option value="renting">Renting</option>
-              <option value="owner">Owner Occupier</option>
-              <option value="family">Living with Family</option>
-            </select>
-          </div>
-        </div>
-      </div>
-
-      <!-- TAB 1: INCOME -->
-      <div class="tab-content" id="tc-1">
-        <div class="alert alert-orange">Income shading applies lender-style discounts to non-base income. Adjust in Settings.</div>
-        <div class="section-title">Applicant 1 – Annual Income</div>
-        <div class="form-grid">
-          <div class="field">
-            <label>Base Salary <span class="badge badge-info">100%</span></label>
-            <div class="input-prefix-wrap"><span class="input-prefix">$</span><input type="number" id="base1" value="120000" min="0" onchange="onInputChange()"></div>
-          </div>
-          <div class="field">
-            <label>Bonus / Commission <span class="badge badge-info" id="shade-bonus">80%</span></label>
-            <div class="input-prefix-wrap"><span class="input-prefix">$</span><input type="number" id="bonus1" value="0" min="0" onchange="onInputChange()"></div>
-            <div class="field-hint">Gross annual amount</div>
-          </div>
-          <div class="field">
-            <label>Overtime <span class="badge badge-info" id="shade-ot">80%</span></label>
-            <div class="input-prefix-wrap"><span class="input-prefix">$</span><input type="number" id="ot1" value="0" min="0" onchange="onInputChange()"></div>
-          </div>
-          <div class="field">
-            <label>Rental Income <span class="badge badge-info" id="shade-rental">75%</span></label>
-            <div class="input-prefix-wrap"><span class="input-prefix">$</span><input type="number" id="rental1" value="0" min="0" onchange="onInputChange()"></div>
-            <div class="field-hint">Gross annual rental receipts</div>
-          </div>
-          <div class="field">
-            <label>Other Regular Income <span class="badge badge-info" id="shade-other">100%</span></label>
-            <div class="input-prefix-wrap"><span class="input-prefix">$</span><input type="number" id="other1" value="0" min="0" onchange="onInputChange()"></div>
-          </div>
-        </div>
-        <div id="income2-section" style="display:none;">
-          <div class="section-title">Applicant 2 – Annual Income</div>
+          <svg class="ia-chevron" viewBox="0 0 20 20" fill="none"><path d="M5 7.5l5 5 5-5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="input-accord-body" id="ia-body-1">
+          <div class="alert alert-orange">Income shading applies lender-style discounts to non-base income. Adjust in Settings.</div>
+          <div class="section-title">Applicant 1 – Annual Income</div>
           <div class="form-grid">
             <div class="field">
               <label>Base Salary <span class="badge badge-info">100%</span></label>
-              <div class="input-prefix-wrap"><span class="input-prefix">$</span><input type="number" id="base2" value="80000" min="0" onchange="onInputChange()"></div>
+              <div class="input-prefix-wrap"><span class="input-prefix">$</span><input type="number" id="base1" value="120000" min="0" onchange="onInputChange()"></div>
             </div>
             <div class="field">
-              <label>Bonus / Commission</label>
-              <div class="input-prefix-wrap"><span class="input-prefix">$</span><input type="number" id="bonus2" value="0" min="0" onchange="onInputChange()"></div>
+              <label>Bonus / Commission <span class="badge badge-info" id="shade-bonus">80%</span></label>
+              <div class="input-prefix-wrap"><span class="input-prefix">$</span><input type="number" id="bonus1" value="0" min="0" onchange="onInputChange()"></div>
+              <div class="field-hint">Gross annual amount</div>
             </div>
             <div class="field">
-              <label>Overtime</label>
-              <div class="input-prefix-wrap"><span class="input-prefix">$</span><input type="number" id="ot2" value="0" min="0" onchange="onInputChange()"></div>
+              <label>Overtime <span class="badge badge-info" id="shade-ot">80%</span></label>
+              <div class="input-prefix-wrap"><span class="input-prefix">$</span><input type="number" id="ot1" value="0" min="0" onchange="onInputChange()"></div>
             </div>
             <div class="field">
-              <label>Rental Income</label>
-              <div class="input-prefix-wrap"><span class="input-prefix">$</span><input type="number" id="rental2" value="0" min="0" onchange="onInputChange()"></div>
+              <label>Rental Income <span class="badge badge-info" id="shade-rental">75%</span></label>
+              <div class="input-prefix-wrap"><span class="input-prefix">$</span><input type="number" id="rental1" value="0" min="0" onchange="onInputChange()"></div>
+              <div class="field-hint">Gross annual rental receipts</div>
             </div>
             <div class="field">
-              <label>Other Regular Income</label>
-              <div class="input-prefix-wrap"><span class="input-prefix">$</span><input type="number" id="other2" value="0" min="0" onchange="onInputChange()"></div>
+              <label>Other Regular Income <span class="badge badge-info" id="shade-other">100%</span></label>
+              <div class="input-prefix-wrap"><span class="input-prefix">$</span><input type="number" id="other1" value="0" min="0" onchange="onInputChange()"></div>
             </div>
           </div>
-        </div>
-        <div class="section-title">HECS / HELP Debt</div>
-        <div class="toggle-row">
-          <div><div class="toggle-label">Has HECS/HELP debt</div><div class="toggle-sub">Compulsory repayments reduce net income</div></div>
-          <label class="toggle"><input type="checkbox" id="helpDebt" onchange="onInputChange()"><span class="toggle-slider"></span></label>
-        </div>
-        <div id="help-detail" style="display:none; margin-top:10px;">
-          <div class="field">
-            <label>HELP Balance Estimate ($)</label>
-            <div class="input-prefix-wrap"><span class="input-prefix">$</span><input type="number" id="helpBalance" value="30000" min="0" onchange="onInputChange()"></div>
-            <div class="field-hint">Used to estimate mandatory annual repayment</div>
+          <div id="income2-section" style="display:none;">
+            <div class="section-title">Applicant 2 – Annual Income</div>
+            <div class="form-grid">
+              <div class="field">
+                <label>Base Salary <span class="badge badge-info">100%</span></label>
+                <div class="input-prefix-wrap"><span class="input-prefix">$</span><input type="number" id="base2" value="80000" min="0" onchange="onInputChange()"></div>
+              </div>
+              <div class="field">
+                <label>Bonus / Commission</label>
+                <div class="input-prefix-wrap"><span class="input-prefix">$</span><input type="number" id="bonus2" value="0" min="0" onchange="onInputChange()"></div>
+              </div>
+              <div class="field">
+                <label>Overtime</label>
+                <div class="input-prefix-wrap"><span class="input-prefix">$</span><input type="number" id="ot2" value="0" min="0" onchange="onInputChange()"></div>
+              </div>
+              <div class="field">
+                <label>Rental Income</label>
+                <div class="input-prefix-wrap"><span class="input-prefix">$</span><input type="number" id="rental2" value="0" min="0" onchange="onInputChange()"></div>
+              </div>
+              <div class="field">
+                <label>Other Regular Income</label>
+                <div class="input-prefix-wrap"><span class="input-prefix">$</span><input type="number" id="other2" value="0" min="0" onchange="onInputChange()"></div>
+              </div>
+            </div>
+          </div>
+          <div class="section-title">HECS / HELP Debt</div>
+          <div class="toggle-row">
+            <div><div class="toggle-label">Has HECS/HELP debt</div><div class="toggle-sub">Compulsory repayments reduce net income</div></div>
+            <label class="toggle"><input type="checkbox" id="helpDebt" onchange="onInputChange()"><span class="toggle-slider"></span></label>
+          </div>
+          <div id="help-detail" style="display:none; margin-top:10px;">
+            <div class="field">
+              <label>HELP Balance Estimate ($)</label>
+              <div class="input-prefix-wrap"><span class="input-prefix">$</span><input type="number" id="helpBalance" value="30000" min="0" onchange="onInputChange()"></div>
+              <div class="field-hint">Used to estimate mandatory annual repayment</div>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- TAB 2: EXPENSES -->
-      <div class="tab-content" id="tc-2">
-        <div class="section-title">Monthly Living Expenses</div>
-        <div class="toggle-row">
-          <div><div class="toggle-label">Use benchmark expenses (HEM)</div><div class="toggle-sub">Higher of actual or benchmark is always used</div></div>
-          <label class="toggle"><input type="checkbox" id="useBenchmark" checked onchange="onInputChange()"><span class="toggle-slider"></span></label>
-        </div>
-        <div class="form-grid" style="margin-top:14px;">
-          <div class="field">
-            <label>Actual Monthly Living Expenses</label>
-            <div class="input-prefix-wrap"><span class="input-prefix">$</span><input type="number" id="actualExpenses" value="3500" min="0" onchange="onInputChange()"></div>
-            <div class="field-hint">All living costs excl. rent/mortgage & liabilities below</div>
+      <!-- ACCORDION 3: EXPENSES -->
+      <div class="input-accord">
+        <button class="input-accord-trigger" id="ia-trigger-2" aria-expanded="false" onclick="toggleInputAccord(2)">
+          <div class="ia-num">3</div>
+          <div class="ia-text">
+            <div class="ia-title">Expenses</div>
+            <div class="ia-hint" id="ia-hint-2">Living costs, childcare &amp; school fees</div>
           </div>
-          <div class="field">
-            <label>Benchmark (HEM estimate)</label>
-            <div class="input-prefix-wrap"><span class="input-prefix">$</span><input type="number" id="benchmarkDisplay" value="0" readonly style="background:#F5F3F0; color:var(--text-muted);"></div>
-            <div class="field-hint">Applied if higher than actual — editable in Settings</div>
+          <svg class="ia-chevron" viewBox="0 0 20 20" fill="none"><path d="M5 7.5l5 5 5-5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="input-accord-body" id="ia-body-2">
+          <div class="section-title">Monthly Living Expenses</div>
+          <div class="toggle-row">
+            <div><div class="toggle-label">Use benchmark expenses (HEM)</div><div class="toggle-sub">Higher of actual or benchmark is always used</div></div>
+            <label class="toggle"><input type="checkbox" id="useBenchmark" checked onchange="onInputChange()"><span class="toggle-slider"></span></label>
           </div>
-        </div>
-        <div class="section-title">Additional Commitments</div>
-        <div class="form-grid">
-          <div class="field">
-            <label>Childcare Costs (monthly)</label>
-            <div class="input-prefix-wrap"><span class="input-prefix">$</span><input type="number" id="childcare" value="0" min="0" onchange="onInputChange()"></div>
+          <div class="form-grid" style="margin-top:14px;">
+            <div class="field">
+              <label>Actual Monthly Living Expenses</label>
+              <div class="input-prefix-wrap"><span class="input-prefix">$</span><input type="number" id="actualExpenses" value="3500" min="0" onchange="onInputChange()"></div>
+              <div class="field-hint">All living costs excl. rent/mortgage &amp; liabilities below</div>
+            </div>
+            <div class="field">
+              <label>Benchmark (HEM estimate)</label>
+              <div class="input-prefix-wrap"><span class="input-prefix">$</span><input type="number" id="benchmarkDisplay" value="0" readonly style="background:var(--bg); color:var(--text-muted);"></div>
+              <div class="field-hint">Applied if higher than actual — editable in Settings</div>
+            </div>
           </div>
-          <div class="field">
-            <label>Private School Fees (annual)</label>
-            <div class="input-prefix-wrap"><span class="input-prefix">$</span><input type="number" id="schoolFees" value="0" min="0" onchange="onInputChange()"></div>
-          </div>
-          <div class="field">
-            <label>Insurance & Commitments (monthly)</label>
-            <div class="input-prefix-wrap"><span class="input-prefix">$</span><input type="number" id="insurance" value="0" min="0" onchange="onInputChange()"></div>
+          <div class="section-title">Additional Commitments</div>
+          <div class="form-grid">
+            <div class="field">
+              <label>Childcare Costs (monthly)</label>
+              <div class="input-prefix-wrap"><span class="input-prefix">$</span><input type="number" id="childcare" value="0" min="0" onchange="onInputChange()"></div>
+            </div>
+            <div class="field">
+              <label>Private School Fees (annual)</label>
+              <div class="input-prefix-wrap"><span class="input-prefix">$</span><input type="number" id="schoolFees" value="0" min="0" onchange="onInputChange()"></div>
+            </div>
+            <div class="field">
+              <label>Insurance &amp; Commitments (monthly)</label>
+              <div class="input-prefix-wrap"><span class="input-prefix">$</span><input type="number" id="insurance" value="0" min="0" onchange="onInputChange()"></div>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- TAB 3: LIABILITIES -->
-      <div class="tab-content" id="tc-3">
-        <div class="section-title">Credit Facilities</div>
-        <div class="form-grid">
-          <div class="field">
-            <label>Credit Card Limits (total)</label>
-            <div class="input-prefix-wrap"><span class="input-prefix">$</span><input type="number" id="ccLimit" value="10000" min="0" onchange="onInputChange()"></div>
-            <div class="field-hint">Total <strong>limit</strong> across all cards — not balance</div>
+      <!-- ACCORDION 4: LIABILITIES -->
+      <div class="input-accord">
+        <button class="input-accord-trigger" id="ia-trigger-3" aria-expanded="false" onclick="toggleInputAccord(3)">
+          <div class="ia-num">4</div>
+          <div class="ia-text">
+            <div class="ia-title">Liabilities</div>
+            <div class="ia-hint" id="ia-hint-3">Credit cards, loans &amp; existing commitments</div>
           </div>
-          <div class="field">
-            <label>Buy Now Pay Later (monthly)</label>
-            <div class="input-prefix-wrap"><span class="input-prefix">$</span><input type="number" id="bnpl" value="0" min="0" onchange="onInputChange()"></div>
+          <svg class="ia-chevron" viewBox="0 0 20 20" fill="none"><path d="M5 7.5l5 5 5-5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="input-accord-body" id="ia-body-3">
+          <div class="section-title">Credit Facilities</div>
+          <div class="form-grid">
+            <div class="field">
+              <label>Credit Card Limits (total)</label>
+              <div class="input-prefix-wrap"><span class="input-prefix">$</span><input type="number" id="ccLimit" value="10000" min="0" onchange="onInputChange()"></div>
+              <div class="field-hint">Total <strong>limit</strong> across all cards — not balance</div>
+            </div>
+            <div class="field">
+              <label>Buy Now Pay Later (monthly)</label>
+              <div class="input-prefix-wrap"><span class="input-prefix">$</span><input type="number" id="bnpl" value="0" min="0" onchange="onInputChange()"></div>
+            </div>
           </div>
-        </div>
-        <div class="section-title">Loan Repayments</div>
-        <div class="form-grid">
-          <div class="field">
-            <label>Personal Loan (monthly repayment)</label>
-            <div class="input-prefix-wrap"><span class="input-prefix">$</span><input type="number" id="personalLoan" value="0" min="0" onchange="onInputChange()"></div>
-          </div>
-          <div class="field">
-            <label>Car Loan (monthly repayment)</label>
-            <div class="input-prefix-wrap"><span class="input-prefix">$</span><input type="number" id="carLoan" value="0" min="0" onchange="onInputChange()"></div>
-          </div>
-          <div class="field">
-            <label>Existing Mortgage (monthly repayment)</label>
-            <div class="input-prefix-wrap"><span class="input-prefix">$</span><input type="number" id="existingMortgage" value="0" min="0" onchange="onInputChange()"></div>
-          </div>
-          <div class="field">
-            <label>Other Monthly Commitments</label>
-            <div class="input-prefix-wrap"><span class="input-prefix">$</span><input type="number" id="otherCommit" value="0" min="0" onchange="onInputChange()"></div>
+          <div class="section-title">Loan Repayments</div>
+          <div class="form-grid">
+            <div class="field">
+              <label>Personal Loan (monthly repayment)</label>
+              <div class="input-prefix-wrap"><span class="input-prefix">$</span><input type="number" id="personalLoan" value="0" min="0" onchange="onInputChange()"></div>
+            </div>
+            <div class="field">
+              <label>Car Loan (monthly repayment)</label>
+              <div class="input-prefix-wrap"><span class="input-prefix">$</span><input type="number" id="carLoan" value="0" min="0" onchange="onInputChange()"></div>
+            </div>
+            <div class="field">
+              <label>Existing Mortgage (monthly repayment)</label>
+              <div class="input-prefix-wrap"><span class="input-prefix">$</span><input type="number" id="existingMortgage" value="0" min="0" onchange="onInputChange()"></div>
+            </div>
+            <div class="field">
+              <label>Other Monthly Commitments</label>
+              <div class="input-prefix-wrap"><span class="input-prefix">$</span><input type="number" id="otherCommit" value="0" min="0" onchange="onInputChange()"></div>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- TAB 4: LOAN -->
-      <div class="tab-content" id="tc-4">
-        <div class="section-title">Property Details</div>
-        <div class="form-grid">
-          <div class="field">
-            <label>Property Value</label>
-            <div class="input-prefix-wrap"><span class="input-prefix">$</span><input type="number" id="propertyValue" value="800000" min="0" onchange="onInputChange()"></div>
+      <!-- ACCORDION 5: LOAN -->
+      <div class="input-accord">
+        <button class="input-accord-trigger" id="ia-trigger-4" aria-expanded="false" onclick="toggleInputAccord(4)">
+          <div class="ia-num">5</div>
+          <div class="ia-text">
+            <div class="ia-title">Loan</div>
+            <div class="ia-hint" id="ia-hint-4">Property, rate &amp; loan parameters</div>
           </div>
-          <div class="field">
-            <label>Deposit / Equity</label>
-            <div class="input-prefix-wrap"><span class="input-prefix">$</span><input type="number" id="deposit" value="160000" min="0" onchange="onInputChange()"></div>
-            <div class="field-hint">Before stamp duty / costs</div>
-          </div>
-        </div>
-        <div class="section-title">Loan Parameters</div>
-        <div class="form-grid">
-          <div class="field">
-            <label>Loan Term (years)</label>
-            <input type="number" id="loanTerm" value="30" min="5" max="30" onchange="onInputChange()">
-          </div>
-          <div class="field">
-            <label>Interest Rate (% p.a.)</label>
-            <div class="input-suffix-wrap"><input type="number" id="interestRate" value="6.5" min="0" max="20" step="0.1" onchange="onInputChange()"><span class="input-suffix">%</span></div>
-          </div>
-          <div class="field">
-            <label>Assessment Buffer</label>
-            <div class="input-suffix-wrap"><input type="number" id="rateBuffer" value="3.0" min="0" max="5" step="0.1" onchange="onInputChange()"><span class="input-suffix">%</span></div>
-            <div class="field-hint">APRA minimum is 3% above actual rate</div>
-          </div>
-          <div class="field">
-            <label>Floor Rate</label>
-            <div class="input-suffix-wrap"><input type="number" id="floorRate" value="9.0" min="0" max="15" step="0.1" onchange="onInputChange()"><span class="input-suffix">%</span></div>
-            <div class="field-hint">Assessment rate won't fall below this</div>
-          </div>
-        </div>
-        <div class="section-title">Loan Purpose & Type</div>
-        <div class="form-grid">
-          <div class="field">
-            <label>Loan Purpose</label>
-            <div class="radio-group">
-              <div class="radio-btn"><input type="radio" name="loanPurpose" id="lp-oo" value="owner_occupier" checked onchange="onInputChange()"><label for="lp-oo">Owner Occupier</label></div>
-              <div class="radio-btn"><input type="radio" name="loanPurpose" id="lp-inv" value="investor" onchange="onInputChange()"><label for="lp-inv">Investor</label></div>
+          <svg class="ia-chevron" viewBox="0 0 20 20" fill="none"><path d="M5 7.5l5 5 5-5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="input-accord-body" id="ia-body-4">
+          <div class="section-title">Property Details</div>
+          <div class="form-grid">
+            <div class="field">
+              <label>Property Value</label>
+              <div class="input-prefix-wrap"><span class="input-prefix">$</span><input type="number" id="propertyValue" value="800000" min="0" onchange="onInputChange()"></div>
+            </div>
+            <div class="field">
+              <label>Deposit / Equity</label>
+              <div class="input-prefix-wrap"><span class="input-prefix">$</span><input type="number" id="deposit" value="160000" min="0" onchange="onInputChange()"></div>
+              <div class="field-hint">Before stamp duty / costs</div>
             </div>
           </div>
-          <div class="field">
-            <label>Repayment Type</label>
-            <div class="radio-group">
-              <div class="radio-btn"><input type="radio" name="repType" id="rt-pi" value="pi" checked onchange="onInputChange()"><label for="rt-pi">P&amp;I</label></div>
-              <div class="radio-btn"><input type="radio" name="repType" id="rt-io" value="io" onchange="onInputChange()"><label for="rt-io">Interest Only</label></div>
+          <div class="section-title">Loan Parameters</div>
+          <div class="form-grid">
+            <div class="field">
+              <label>Loan Term (years)</label>
+              <input type="number" id="loanTerm" value="30" min="5" max="30" onchange="onInputChange()">
+            </div>
+            <div class="field">
+              <label>Interest Rate (% p.a.)</label>
+              <div class="input-suffix-wrap"><input type="number" id="interestRate" value="6.5" min="0" max="20" step="0.1" onchange="onInputChange()"><span class="input-suffix">%</span></div>
+            </div>
+            <div class="field">
+              <label>Assessment Buffer</label>
+              <div class="input-suffix-wrap"><input type="number" id="rateBuffer" value="3.0" min="0" max="5" step="0.1" onchange="onInputChange()"><span class="input-suffix">%</span></div>
+              <div class="field-hint">APRA minimum is 3% above actual rate</div>
+            </div>
+            <div class="field">
+              <label>Floor Rate</label>
+              <div class="input-suffix-wrap"><input type="number" id="floorRate" value="9.0" min="0" max="15" step="0.1" onchange="onInputChange()"><span class="input-suffix">%</span></div>
+              <div class="field-hint">Assessment rate won't fall below this</div>
             </div>
           </div>
-        </div>
-        <div style="margin-top:16px; padding:12px; background:#F0F5FF; border-radius:8px; font-size:12px; color:var(--navy-light);">
-          <strong>Assessment Rate:</strong> <span id="assessRateDisplay">—</span> p.a. &nbsp;·&nbsp; 
-          max(rate + buffer, floor rate)
+          <div class="section-title">Loan Purpose &amp; Type</div>
+          <div class="form-grid">
+            <div class="field">
+              <label>Loan Purpose</label>
+              <div class="radio-group">
+                <div class="radio-btn"><input type="radio" name="loanPurpose" id="lp-oo" value="owner_occupier" checked onchange="onInputChange()"><label for="lp-oo">Owner Occupier</label></div>
+                <div class="radio-btn"><input type="radio" name="loanPurpose" id="lp-inv" value="investor" onchange="onInputChange()"><label for="lp-inv">Investor</label></div>
+              </div>
+            </div>
+            <div class="field">
+              <label>Repayment Type</label>
+              <div class="radio-group">
+                <div class="radio-btn"><input type="radio" name="repType" id="rt-pi" value="pi" checked onchange="onInputChange()"><label for="rt-pi">P&amp;I</label></div>
+                <div class="radio-btn"><input type="radio" name="repType" id="rt-io" value="io" onchange="onInputChange()"><label for="rt-io">Interest Only</label></div>
+              </div>
+            </div>
+          </div>
+          <div style="margin-top:16px; padding:12px; background:var(--blue-ghost); border-radius:8px; font-size:12px; color:var(--blue);">
+            <strong>Assessment Rate:</strong> <span id="assessRateDisplay">—</span> p.a. &nbsp;·&nbsp; max(rate + buffer, floor rate)
+          </div>
         </div>
       </div>
+
     </div>
 
     <!-- ACTIONS -->
@@ -1434,50 +1477,74 @@ function renderResults(res) {
 function renderScenarios() {
   const grid = document.getElementById('scenarioGrid');
   const baseRes = currentResult;
-  let html = '';
 
-  // Base card
-  html += `<div class="scenario-card base">
+  function metricRow(label, val, color) {
+    const style = color ? ` style="color:${color};font-weight:700;-webkit-text-fill-color:${color};"` : '';
+    return `<div class="scenario-metric">
+      <div class="scenario-metric-name">${label}</div>
+      <div class="scenario-metric-val"${style}>${val}</div>
+    </div>`;
+  }
+
+  function metrics(res) {
+    const empty = !res;
+    const rep  = res ? (res.targetLoan > 0 ? fmtM(res.targetActualRepayment) : fmtM(res.actualRepayment)) : '—';
+    const lvr  = res ? fmtPct(res.lvr) : '—';
+    const dti  = res ? (res.dti !== null ? res.dti.toFixed(1) + 'x' : '—') : '—';
+    const surp = res ? (res.targetLoan > 0 ? fmtM(res.surplus) : '—') : '—';
+    const surpCol = res && res.targetLoan > 0 ? (res.surplus < 0 ? '#dc2626' : '#059669') : null;
+    return `<div class="scenario-metrics${empty ? ' empty' : ''}">
+      ${metricRow('Monthly Repmt', rep)}
+      ${metricRow('LVR', lvr)}
+      ${metricRow('DTI', dti)}
+      ${metricRow('Surplus', surp, surpCol)}
+    </div>`;
+  }
+
+  // ── BASE CASE ──────────────────────────────────────────────────
+  let html = `
+  <div class="scenario-card base">
     <div class="scenario-head base-head">
       <div class="scenario-name">Base Case</div>
-      <span style="font-size:11px;color:rgba(255,255,255,0.6);">Current inputs</span>
+      <span class="scenario-head-sub">Current inputs</span>
     </div>
-    ${baseRes ? `
-    <div class="scenario-amount">${fmt(baseRes.borrowingPower)}</div>
-    <div class="scenario-delta" style="color:var(--text-muted)">Reference</div>
-    <div class="scenario-metrics">
-      <div class="scenario-metric"><div class="scenario-metric-name">Target Repmt (actual rate)</div><div class="scenario-metric-val">${baseRes.targetLoan > 0 ? fmtM(baseRes.targetActualRepayment) : '—'}</div></div>
-      <div class="scenario-metric"><div class="scenario-metric-name">LVR (target loan)</div><div class="scenario-metric-val">${fmtPct(baseRes.lvr)}</div></div>
-      <div class="scenario-metric"><div class="scenario-metric-name">DTI (max borrowing)</div><div class="scenario-metric-val">${baseRes.dti !== null ? baseRes.dti.toFixed(1) + 'x' : '—'}</div></div>
-      <div class="scenario-metric"><div class="scenario-metric-name">Surplus (target loan)</div><div class="scenario-metric-val" style="color:${baseRes.surplus < 0 ? 'var(--red)' : baseRes.surplus < 500 ? 'var(--orange)' : 'var(--green)'}">${baseRes.targetLoan > 0 ? fmtM(baseRes.surplus) : '—'}</div></div>
-    </div>` : '<div style="padding:20px;font-size:13px;color:var(--text-muted)">Calculate above first.</div>'}
-    <div class="scenario-actions"><button class="btn-sm btn-primary" onclick="saveScenario(1)">Save as Scenario 1</button><button class="btn-sm btn-outline" onclick="saveScenario(2)">→ Scenario 2</button></div>
+    <div class="scenario-amount${baseRes ? '' : ' empty'}">${baseRes ? fmt(baseRes.borrowingPower) : '—'}</div>
+    <div class="scenario-delta">Reference</div>
+    ${metrics(baseRes)}
+    <div class="scenario-actions">
+      <button class="btn-sm btn-primary" onclick="saveScenario(1)">→ Scenario 1</button>
+      <button class="btn-sm btn-primary" onclick="saveScenario(2)">→ Scenario 2</button>
+    </div>
   </div>`;
 
+  // ── SCENARIO 1 & 2 ─────────────────────────────────────────────
   for (let i = 1; i <= 2; i++) {
     const s = scenarios[i];
     const base = baseRes ? baseRes.borrowingPower : 0;
     const delta = s ? s.borrowingPower - base : null;
-    html += `<div class="scenario-card">
+    let deltaClass = 'scenario-delta';
+    let deltaText = 'No data saved yet';
+    if (delta !== null) {
+      deltaClass += delta >= 0 ? ' pos' : ' neg';
+      deltaText = (delta >= 0 ? '+' : '') + fmt(delta) + ' vs base';
+    }
+
+    html += `
+    <div class="scenario-card">
       <div class="scenario-head">
         <input class="scenario-edit-name" value="${scenarioNames[i]}" onchange="scenarioNames[${i}]=this.value">
-        <button class="btn-sm btn-outline" onclick="clearScenario(${i})" style="font-size:11px;padding:3px 8px;">Clear</button>
+        <button class="btn-sm btn-outline secondary" onclick="clearScenario(${i})">Clear</button>
       </div>
-      ${s ? `
-      <div class="scenario-amount">${fmt(s.borrowingPower)}</div>
-      <div class="scenario-delta ${delta >= 0 ? 'pos' : 'neg'}">${delta >= 0 ? '+' : ''}${fmt(delta)} vs base</div>
-      <div class="scenario-metrics">
-        <div class="scenario-metric"><div class="scenario-metric-name">Target Repmt (actual rate)</div><div class="scenario-metric-val">${s.targetLoan > 0 ? fmtM(s.targetActualRepayment) : '—'}</div></div>
-        <div class="scenario-metric"><div class="scenario-metric-name">LVR (target loan)</div><div class="scenario-metric-val">${fmtPct(s.lvr)}</div></div>
-        <div class="scenario-metric"><div class="scenario-metric-name">DTI (max borrowing)</div><div class="scenario-metric-val">${s.dti !== null ? s.dti.toFixed(1) + 'x' : '—'}</div></div>
-        <div class="scenario-metric"><div class="scenario-metric-name">Surplus (target loan)</div><div class="scenario-metric-val" style="color:${s.surplus < 0 ? 'var(--red)' : s.surplus < 500 ? 'var(--orange)' : 'var(--green)'}">${s.targetLoan > 0 ? fmtM(s.surplus) : '—'}</div></div>
-      </div>` : `<div style="padding:20px;font-size:13px;color:var(--text-muted)">Adjust inputs and save a scenario to compare.</div>`}
+      <div class="scenario-amount${s ? '' : ' empty'}">${s ? fmt(s.borrowingPower) : '—'}</div>
+      <div class="${deltaClass}">${deltaText}</div>
+      ${metrics(s)}
       <div class="scenario-actions">
-        <button class="btn-sm btn-primary" onclick="saveScenario(${i})">Save Current Inputs</button>
-        ${s && scenarioInputs[i] ? `<button class="btn-sm btn-outline" onclick="loadScenario(${i})">Load</button>` : ''}
+        <button class="btn-sm btn-primary" onclick="saveScenario(${i})">Save Current</button>
+        ${s && scenarioInputs[i] ? `<button class="btn-sm btn-outline secondary" onclick="loadScenario(${i})">↩ Load</button>` : ''}
       </div>
     </div>`;
   }
+
   grid.innerHTML = html;
   renderChart();
 }
@@ -1538,6 +1605,7 @@ function onInputChange() {
   document.getElementById('shade-other').textContent = assumptions.shading.other + '%';
 
   const inputs = readInputs();
+  updateAccordHints(inputs);
   try {
     const res = runCalc(inputs, assumptions);
     renderResults(res);
@@ -1545,9 +1613,43 @@ function onInputChange() {
   } catch(e) { console.error(e); }
 }
 
-function switchTab(idx) {
-  document.querySelectorAll('.tab').forEach((t, i) => t.classList.toggle('active', i === idx));
-  document.querySelectorAll('.tab-content').forEach((t, i) => t.classList.toggle('active', i === idx));
+function toggleInputAccord(idx) {
+  const body = document.getElementById('ia-body-' + idx);
+  const trigger = document.getElementById('ia-trigger-' + idx);
+  const isOpen = body.classList.contains('open');
+  body.classList.toggle('open', !isOpen);
+  trigger.setAttribute('aria-expanded', String(!isOpen));
+}
+
+function updateAccordHints(inputs) {
+  const appType = inputs.isJoint ? 'Joint' : 'Single';
+  const emp = document.getElementById('emp1').options[document.getElementById('emp1').selectedIndex].text;
+  const deps = parseInt(inputs.dependants) || 0;
+  document.getElementById('ia-hint-0').textContent = `${appType} · ${emp}${deps > 0 ? ' · ' + deps + ' dep' : ''}`;
+
+  const base = parseFloat(inputs.base1) || 0;
+  const base2 = parseFloat(inputs.base2) || 0;
+  const totalBase = base + (inputs.isJoint ? base2 : 0);
+  document.getElementById('ia-hint-1').textContent = totalBase > 0
+    ? 'Base ' + fmt(totalBase) + (inputs.helpDebt ? ' · HECS' : '')
+    : 'Salary, bonus, rental & other income';
+
+  const exp = parseFloat(inputs.actualExpenses) || 0;
+  document.getElementById('ia-hint-2').textContent = exp > 0
+    ? 'Monthly expenses ' + fmtM(exp)
+    : 'Living costs, childcare & school fees';
+
+  const cc = parseFloat(inputs.ccLimit) || 0;
+  const loans = (parseFloat(inputs.personalLoan) || 0) + (parseFloat(inputs.carLoan) || 0) + (parseFloat(inputs.existingMortgage) || 0);
+  document.getElementById('ia-hint-3').textContent = (cc > 0 || loans > 0)
+    ? (cc > 0 ? 'CC ' + fmt(cc) : '') + (loans > 0 ? (cc > 0 ? ' · ' : '') + 'Loans ' + fmtM(loans) + '/mo' : '')
+    : 'Credit cards, loans & existing commitments';
+
+  const propVal = parseFloat(inputs.propertyValue) || 0;
+  const rate = parseFloat(inputs.interestRate) || 0;
+  document.getElementById('ia-hint-4').textContent = propVal > 0
+    ? fmt(propVal) + ' · ' + rate.toFixed(2) + '% p.a.'
+    : 'Property, rate & loan parameters';
 }
 
 function toggleEdu(btn) {
@@ -1633,6 +1735,11 @@ function resetAll() {
   document.getElementById('lp-oo').checked = true;
   document.getElementById('rt-pi').checked = true;
   resetScenarios();
+  // Close all accordions, reopen first
+  for (let i = 0; i < 5; i++) {
+    document.getElementById('ia-body-' + i).classList.toggle('open', i === 0);
+    document.getElementById('ia-trigger-' + i).setAttribute('aria-expanded', i === 0 ? 'true' : 'false');
+  }
   onInputChange();
 }
 
