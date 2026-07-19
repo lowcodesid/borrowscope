@@ -505,6 +505,27 @@ input[type=number] { -moz-appearance: textfield; }
               </select>
             </div>
           </div>
+          <div id="rent-detail" style="display:none; margin-top:14px;">
+            <div class="form-grid">
+              <div class="field">
+                <label>Current Rent</label>
+                <div class="input-prefix-wrap"><span class="input-prefix">$</span><input type="number" id="rentAmount" value="0" min="0" onchange="onInputChange()"></div>
+              </div>
+              <div class="field">
+                <label>Frequency</label>
+                <select id="rentFreq" onchange="onInputChange()">
+                  <option value="weekly">Weekly</option>
+                  <option value="fortnightly">Fortnightly</option>
+                  <option value="monthly" selected>Monthly</option>
+                  <option value="annually">Annually</option>
+                </select>
+              </div>
+            </div>
+            <div class="toggle-row" style="margin-top:10px;">
+              <div><div class="toggle-label">Continues after settlement</div><div class="toggle-sub">Check if you'll keep paying this rent after buying (e.g. not vacating immediately, or buying as an investment)</div></div>
+              <label class="toggle"><input type="checkbox" id="rentContinues" onchange="onInputChange()"><span class="toggle-slider"></span></label>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -577,9 +598,9 @@ input[type=number] { -moz-appearance: textfield; }
           </div>
           <div id="help-detail" style="display:none; margin-top:10px;">
             <div class="field">
-              <label>HELP Balance Estimate ($)</label>
+              <label>HELP Balance Estimate ($) — reference only</label>
               <div class="input-prefix-wrap"><span class="input-prefix">$</span><input type="number" id="helpBalance" value="30000" min="0" onchange="onInputChange()"></div>
-              <div class="field-hint">Used to estimate mandatory annual repayment</div>
+              <div class="field-hint">Compulsory repayment is based on income, not balance — this field doesn't affect your result</div>
             </div>
           </div>
         </div>
@@ -597,10 +618,7 @@ input[type=number] { -moz-appearance: textfield; }
         </button>
         <div class="input-accord-body" id="ia-body-2">
           <div class="section-title">Monthly Living Expenses</div>
-          <div class="toggle-row">
-            <div><div class="toggle-label">Use benchmark expenses (HEM)</div><div class="toggle-sub">Higher of actual or benchmark is always used</div></div>
-            <label class="toggle"><input type="checkbox" id="useBenchmark" checked onchange="onInputChange()"><span class="toggle-slider"></span></label>
-          </div>
+          <div class="alert alert-orange" style="margin-bottom:0;">The higher of actual expenses or the HEM benchmark is always applied — matches real lender practice.</div>
           <div class="form-grid" style="margin-top:14px;">
             <div class="field">
               <label>Actual Monthly Living Expenses</label>
@@ -624,8 +642,17 @@ input[type=number] { -moz-appearance: textfield; }
               <div class="input-prefix-wrap"><span class="input-prefix">$</span><input type="number" id="schoolFees" value="0" min="0" onchange="onInputChange()"></div>
             </div>
             <div class="field">
-              <label>Insurance &amp; Commitments (monthly)</label>
+              <label>Insurance &amp; Commitments</label>
               <div class="input-prefix-wrap"><span class="input-prefix">$</span><input type="number" id="insurance" value="0" min="0" onchange="onInputChange()"></div>
+            </div>
+            <div class="field">
+              <label>Frequency</label>
+              <select id="insuranceFreq" onchange="onInputChange()">
+                <option value="weekly">Weekly</option>
+                <option value="fortnightly">Fortnightly</option>
+                <option value="monthly" selected>Monthly</option>
+                <option value="annually">Annually</option>
+              </select>
             </div>
           </div>
         </div>
@@ -650,27 +677,72 @@ input[type=number] { -moz-appearance: textfield; }
               <div class="field-hint">Total <strong>limit</strong> across all cards — not balance</div>
             </div>
             <div class="field">
-              <label>Buy Now Pay Later (monthly)</label>
+              <label>Buy Now Pay Later</label>
               <div class="input-prefix-wrap"><span class="input-prefix">$</span><input type="number" id="bnpl" value="0" min="0" onchange="onInputChange()"></div>
+            </div>
+            <div class="field">
+              <label>BNPL Frequency</label>
+              <select id="bnplFreq" onchange="onInputChange()">
+                <option value="weekly">Weekly</option>
+                <option value="fortnightly">Fortnightly</option>
+                <option value="monthly" selected>Monthly</option>
+                <option value="annually">Annually</option>
+              </select>
             </div>
           </div>
           <div class="section-title">Loan Repayments</div>
           <div class="form-grid">
             <div class="field">
-              <label>Personal Loan (monthly repayment)</label>
+              <label>Personal Loan</label>
               <div class="input-prefix-wrap"><span class="input-prefix">$</span><input type="number" id="personalLoan" value="0" min="0" onchange="onInputChange()"></div>
             </div>
             <div class="field">
-              <label>Car Loan (monthly repayment)</label>
+              <label>Frequency</label>
+              <select id="personalLoanFreq" onchange="onInputChange()">
+                <option value="weekly">Weekly</option>
+                <option value="fortnightly">Fortnightly</option>
+                <option value="monthly" selected>Monthly</option>
+                <option value="annually">Annually</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Car Loan</label>
               <div class="input-prefix-wrap"><span class="input-prefix">$</span><input type="number" id="carLoan" value="0" min="0" onchange="onInputChange()"></div>
             </div>
             <div class="field">
-              <label>Existing Mortgage (monthly repayment)</label>
+              <label>Frequency</label>
+              <select id="carLoanFreq" onchange="onInputChange()">
+                <option value="weekly">Weekly</option>
+                <option value="fortnightly">Fortnightly</option>
+                <option value="monthly" selected>Monthly</option>
+                <option value="annually">Annually</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Existing Mortgage</label>
               <div class="input-prefix-wrap"><span class="input-prefix">$</span><input type="number" id="existingMortgage" value="0" min="0" onchange="onInputChange()"></div>
             </div>
             <div class="field">
-              <label>Other Monthly Commitments</label>
+              <label>Frequency</label>
+              <select id="existingMortgageFreq" onchange="onInputChange()">
+                <option value="weekly">Weekly</option>
+                <option value="fortnightly">Fortnightly</option>
+                <option value="monthly" selected>Monthly</option>
+                <option value="annually">Annually</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Other Commitments</label>
               <div class="input-prefix-wrap"><span class="input-prefix">$</span><input type="number" id="otherCommit" value="0" min="0" onchange="onInputChange()"></div>
+            </div>
+            <div class="field">
+              <label>Frequency</label>
+              <select id="otherCommitFreq" onchange="onInputChange()">
+                <option value="weekly">Weekly</option>
+                <option value="fortnightly">Fortnightly</option>
+                <option value="monthly" selected>Monthly</option>
+                <option value="annually">Annually</option>
+              </select>
             </div>
           </div>
         </div>
@@ -729,6 +801,15 @@ input[type=number] { -moz-appearance: textfield; }
                 <div class="radio-btn"><input type="radio" name="loanPurpose" id="lp-inv" value="investor" onchange="onInputChange()"><label for="lp-inv">Investor</label></div>
               </div>
             </div>
+          </div>
+          <div id="investor-detail" style="display:none; margin-top:4px;">
+            <div class="field">
+              <label>Expected Rental Income (this property, annual)</label>
+              <div class="input-prefix-wrap"><span class="input-prefix">$</span><input type="number" id="expectedRental" value="0" min="0" onchange="onInputChange()"></div>
+              <div class="field-hint">Gross annual rent expected — shaded the same as other rental income</div>
+            </div>
+          </div>
+          <div class="form-grid" style="margin-top:14px;">
             <div class="field">
               <label>Repayment Type</label>
               <div class="radio-group">
@@ -786,7 +867,7 @@ input[type=number] { -moz-appearance: textfield; }
         <div class="metric-cell">
           <div class="metric-name">DTI</div>
           <div class="metric-value" id="metricDTI">—</div>
-          <div class="metric-sub">Max borrowing / income</div>
+          <div class="metric-sub" id="metricDTISub">Loan / income</div>
         </div>
         <div class="metric-cell">
           <div class="metric-name">Net Monthly Income</div>
@@ -984,6 +1065,17 @@ input[type=number] { -moz-appearance: textfield; }
         </div>
       </div>
       <div class="modal-section">
+        <div class="modal-section-title">Employment Type Shading (%)</div>
+        <div style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">Applied to base salary only, on top of the shading above.</div>
+        <div class="form-grid">
+          <div class="field"><label>Full-time</label><div class="input-suffix-wrap"><input type="number" id="s-emp-fulltime" value="100" min="0" max="100"><span class="input-suffix">%</span></div></div>
+          <div class="field"><label>Part-time</label><div class="input-suffix-wrap"><input type="number" id="s-emp-parttime" value="100" min="0" max="100"><span class="input-suffix">%</span></div></div>
+          <div class="field"><label>Casual</label><div class="input-suffix-wrap"><input type="number" id="s-emp-casual" value="90" min="0" max="100"><span class="input-suffix">%</span></div></div>
+          <div class="field"><label>Contractor</label><div class="input-suffix-wrap"><input type="number" id="s-emp-contractor" value="90" min="0" max="100"><span class="input-suffix">%</span></div></div>
+          <div class="field"><label>Self-employed</label><div class="input-suffix-wrap"><input type="number" id="s-emp-selfemployed" value="80" min="0" max="100"><span class="input-suffix">%</span></div></div>
+        </div>
+      </div>
+      <div class="modal-section">
         <div class="modal-section-title">HEM Benchmark Monthly Expenses ($)</div>
         <div style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">Higher of actual or benchmark is always applied.</div>
         <div class="form-grid">
@@ -1016,6 +1108,21 @@ input[type=number] { -moz-appearance: textfield; }
 // ============================================================
 // CALCULATION ENGINE — PURE DETERMINISTIC FUNCTIONS
 // ============================================================
+
+function num(val, opts) {
+  opts = opts || {};
+  const min = opts.min !== undefined ? opts.min : 0;
+  let n = parseFloat(val);
+  if (isNaN(n)) n = 0;
+  if (min !== null && n < min) n = min;
+  return n;
+}
+
+const FREQ_TO_MONTHLY = { weekly: 52 / 12, fortnightly: 26 / 12, monthly: 1, annually: 1 / 12 };
+function toMonthly(amount, freq) {
+  const f = FREQ_TO_MONTHLY[freq] !== undefined ? FREQ_TO_MONTHLY[freq] : 1;
+  return num(amount) * f;
+}
 
 function calcIncomeTax(income) {
   if (income <= 0) return 0;
@@ -1068,12 +1175,13 @@ function calcIORepayment(principal, annualRatePct) {
   return principal * (annualRatePct / 100) / 12;
 }
 
-function shadeIncome(inc, shading) {
-  return (parseFloat(inc.base) || 0) * shading.base / 100
-    + (parseFloat(inc.bonus) || 0) * shading.bonus / 100
-    + (parseFloat(inc.overtime) || 0) * shading.overtime / 100
-    + (parseFloat(inc.rental) || 0) * shading.rental / 100
-    + (parseFloat(inc.other) || 0) * shading.other / 100;
+function shadeIncome(inc, shading, empFactor) {
+  const empMult = (empFactor !== undefined ? empFactor : 100) / 100;
+  return num(inc.base) * shading.base / 100 * empMult
+    + num(inc.bonus) * shading.bonus / 100
+    + num(inc.overtime) * shading.overtime / 100
+    + num(inc.rental) * shading.rental / 100
+    + num(inc.other) * shading.other / 100;
 }
 
 function getBenchmark(isJoint, dependants, hem) {
@@ -1116,9 +1224,20 @@ function analyzeFactors(inputs, res, assumptions) {
   if (childcare > 1500) hurting.push({ text: `High childcare costs (${fmtM(childcare)}/month)`, score: 2 });
   else if (childcare > 500) hurting.push({ text: `Childcare costs (${fmtM(childcare)}/month)`, score: 1 });
 
-  const existingDebt = (parseFloat(inputs.personalLoan) || 0) + (parseFloat(inputs.carLoan) || 0) + (parseFloat(inputs.existingMortgage) || 0);
+  const existingDebt = toMonthly(inputs.personalLoan, inputs.personalLoanFreq) + toMonthly(inputs.carLoan, inputs.carLoanFreq) + toMonthly(inputs.existingMortgage, inputs.existingMortgageFreq);
   if (existingDebt > 2000) hurting.push({ text: `Existing loan repayments of ${fmtM(existingDebt)}/month`, score: 3 });
   else if (existingDebt > 500) hurting.push({ text: `Existing loan repayments of ${fmtM(existingDebt)}/month`, score: 2 });
+
+  const EMP_LABELS = { fulltime: 'Full-time', parttime: 'Part-time', casual: 'Casual', contractor: 'Contractor', selfemployed: 'Self-employed' };
+  const empFactor = assumptions.empShading[inputs.emp1] !== undefined ? assumptions.empShading[inputs.emp1] : 100;
+  if (empFactor < 100) hurting.push({ text: `${EMP_LABELS[inputs.emp1] || inputs.emp1} employment assessed at ${empFactor}% of base salary`, score: 2 });
+
+  const rentOngoing = inputs.livingSituation === 'renting' && inputs.rentContinues;
+  if (rentOngoing) hurting.push({ text: `Ongoing rent adds ${fmtM(toMonthly(inputs.rentAmount, inputs.rentFreq))}/month to expenses`, score: 2 });
+
+  if (inputs.loanPurpose === 'investor' && (parseFloat(inputs.expectedRental) || 0) > 0) {
+    helping.push({ text: `Expected rental income adds ${fmt((parseFloat(inputs.expectedRental) || 0) * assumptions.shading.rental / 100)}/year to assessable income`, score: 2 });
+  }
 
   const rateGap = res.assessmentRate - inputs.interestRate;
   if (rateGap >= 3) hurting.push({ text: `Assessment buffer adds ${rateGap.toFixed(1)}% to assessed rate (${res.assessmentRate.toFixed(2)}% total)`, score: 2 });
@@ -1137,20 +1256,29 @@ function analyzeFactors(inputs, res, assumptions) {
 }
 
 function runCalc(inputs, assumptions) {
-  // Assessable income
-  const inc1 = shadeIncome({ base: inputs.base1, bonus: inputs.bonus1, overtime: inputs.ot1, rental: inputs.rental1, other: inputs.other1 }, assumptions.shading);
-  const inc2 = inputs.isJoint ? shadeIncome({ base: inputs.base2, bonus: inputs.bonus2, overtime: inputs.ot2, rental: inputs.rental2, other: inputs.other2 }, assumptions.shading) : 0;
-  const totalAssessableIncome = inc1 + inc2;
+  // Assessable income — employment type haircuts base salary only
+  const empFactor1 = assumptions.empShading[inputs.emp1] !== undefined ? assumptions.empShading[inputs.emp1] : 100;
+  const empFactor2 = assumptions.empShading[inputs.emp2] !== undefined ? assumptions.empShading[inputs.emp2] : 100;
+  const inc1 = shadeIncome({ base: inputs.base1, bonus: inputs.bonus1, overtime: inputs.ot1, rental: inputs.rental1, other: inputs.other1 }, assumptions.shading, empFactor1);
+  const inc2 = inputs.isJoint ? shadeIncome({ base: inputs.base2, bonus: inputs.bonus2, overtime: inputs.ot2, rental: inputs.rental2, other: inputs.other2 }, assumptions.shading, empFactor2) : 0;
+
+  // Investor purchase — expected rental income on the SUBJECT property, shaded like other rental
+  // income and attributed to Applicant 1 for tax purposes (simplification — real ownership/tax
+  // splits vary by title structure).
+  const isInvestor = inputs.loanPurpose === 'investor';
+  const subjectRental = isInvestor ? num(inputs.expectedRental) * assumptions.shading.rental / 100 : 0;
+
+  const totalAssessableIncome = inc1 + inc2 + subjectRental;
 
   // Tax
-  const tax1 = calcIncomeTax(inc1);
+  const tax1 = calcIncomeTax(inc1 + subjectRental);
   const tax2 = inputs.isJoint ? calcIncomeTax(inc2) : 0;
   let netMonthlyIncome = (totalAssessableIncome - tax1 - tax2) / 12;
 
   // HELP repayment
   let helpRepayment = 0;
   if (inputs.helpDebt) {
-    const rep1 = calcHELPRepayment(inc1);
+    const rep1 = calcHELPRepayment(inc1 + subjectRental);
     const rep2 = inputs.isJoint ? calcHELPRepayment(inc2) : 0;
     helpRepayment = (rep1 + rep2) / 12;
     netMonthlyIncome -= helpRepayment;
@@ -1158,23 +1286,27 @@ function runCalc(inputs, assumptions) {
 
   // Expenses
   const benchmark = getBenchmark(inputs.isJoint, parseInt(inputs.dependants) || 0, assumptions.hem);
-  const actualExp = parseFloat(inputs.actualExpenses) || 0;
-  const addlExp = (parseFloat(inputs.schoolFees) || 0) / 12 + (parseFloat(inputs.childcare) || 0) + (parseFloat(inputs.insurance) || 0);
+  const actualExp = num(inputs.actualExpenses);
+  // Current rent — only counted if it continues past settlement (e.g. investor purchase,
+  // or the applicant has explicitly said they're not vacating on this purchase).
+  const rentContinues = inputs.livingSituation === 'renting' && inputs.rentContinues;
+  const rentMonthly = rentContinues ? toMonthly(inputs.rentAmount, inputs.rentFreq) : 0;
+  const addlExp = num(inputs.schoolFees) / 12 + num(inputs.childcare) + toMonthly(inputs.insurance, inputs.insuranceFreq) + rentMonthly;
   const appliedExpenses = Math.max(actualExp, benchmark) + addlExp;
 
-  // Liabilities
-  const ccMonthly = (parseFloat(inputs.ccLimit) || 0) * assumptions.ccRate / 100;
+  // Liabilities — each frequency-normalized to monthly
+  const ccMonthly = num(inputs.ccLimit) * assumptions.ccRate / 100;
   const monthlyLiabilities = ccMonthly
-    + (parseFloat(inputs.personalLoan) || 0)
-    + (parseFloat(inputs.carLoan) || 0)
-    + (parseFloat(inputs.existingMortgage) || 0)
-    + (parseFloat(inputs.bnpl) || 0)
-    + (parseFloat(inputs.otherCommit) || 0);
+    + toMonthly(inputs.personalLoan, inputs.personalLoanFreq)
+    + toMonthly(inputs.carLoan, inputs.carLoanFreq)
+    + toMonthly(inputs.existingMortgage, inputs.existingMortgageFreq)
+    + toMonthly(inputs.bnpl, inputs.bnplFreq)
+    + toMonthly(inputs.otherCommit, inputs.otherCommitFreq);
 
   // Assessment rate
-  const actualRate = parseFloat(inputs.interestRate) || 6.5;
-  const buffer = parseFloat(inputs.rateBuffer) || 3.0;
-  const floor = parseFloat(inputs.floorRate) || 9.0;
+  const actualRate = num(inputs.interestRate, { min: 0 }) || 6.5;
+  const buffer = num(inputs.rateBuffer, { min: 0 }) || 3.0;
+  const floor = num(inputs.floorRate, { min: 0 }) || 9.0;
   const assessmentRate = Math.max(actualRate + buffer, floor);
 
   const isIO = inputs.repType === 'io';
@@ -1198,8 +1330,8 @@ function runCalc(inputs, assumptions) {
   // LVR, monthly surplus, repayments, income bar and position
   // are all calculated against the TARGET loan (property - deposit),
   // not the theoretical maximum. This is the meaningful number.
-  const propVal = parseFloat(inputs.propertyValue) || 0;
-  const deposit = parseFloat(inputs.deposit) || 0;
+  const propVal = num(inputs.propertyValue);
+  const deposit = num(inputs.deposit);
   const targetLoan = Math.max(0, propVal - deposit);
 
   // LVR = target loan / property value (standard definition)
@@ -1227,12 +1359,14 @@ function runCalc(inputs, assumptions) {
 
   // ── POSITION — based on target loan, not max borrowing ─────────
   // Stronger: target loan affordable AND surplus healthy AND DTI reasonable
-  // Moderate: target loan affordable but tight, or max DTI moderate
+  // Moderate: target loan affordable but tight, or target DTI moderate
   // Constrained: target loan not affordable OR surplus very low
+  // NOTE: uses targetDti (loan actually being sought), not max-borrowing dti —
+  // keeps Position consistent with every other metric on the results panel.
   let position = 'stronger';
   if (!targetFeasible || surplusAtTarget < 200) {
     position = 'constrained';
-  } else if (surplusAtTarget < 800 || (dti !== null && dti > 6)) {
+  } else if (surplusAtTarget < 800 || (targetDti !== null && targetDti > 6)) {
     position = 'moderate';
   }
 
@@ -1274,6 +1408,7 @@ function runCalc(inputs, assumptions) {
 
 const DEFAULT_ASSUMPTIONS = {
   shading: { base: 100, bonus: 80, overtime: 80, rental: 75, other: 100 },
+  empShading: { fulltime: 100, parttime: 100, casual: 90, contractor: 90, selfemployed: 80 },
   hem: { s0: 2000, s1: 2700, s2: 3200, s3: 3700, c0: 3200, c1: 3900, c2: 4400, c3: 4900 },
   ccRate: 3.8,
   minSurplus: 200
@@ -1310,17 +1445,26 @@ function readInputs() {
     other2: document.getElementById('other2').value,
     dependants: document.getElementById('dependants').value,
     livingSituation: document.getElementById('livingSituation').value,
+    rentAmount: document.getElementById('rentAmount').value,
+    rentFreq: document.getElementById('rentFreq').value,
+    rentContinues: document.getElementById('rentContinues').checked,
     helpDebt: document.getElementById('helpDebt').checked,
     actualExpenses: document.getElementById('actualExpenses').value,
     childcare: document.getElementById('childcare').value,
     schoolFees: document.getElementById('schoolFees').value,
     insurance: document.getElementById('insurance').value,
+    insuranceFreq: document.getElementById('insuranceFreq').value,
     ccLimit: document.getElementById('ccLimit').value,
     bnpl: document.getElementById('bnpl').value,
+    bnplFreq: document.getElementById('bnplFreq').value,
     personalLoan: document.getElementById('personalLoan').value,
+    personalLoanFreq: document.getElementById('personalLoanFreq').value,
     carLoan: document.getElementById('carLoan').value,
+    carLoanFreq: document.getElementById('carLoanFreq').value,
     existingMortgage: document.getElementById('existingMortgage').value,
+    existingMortgageFreq: document.getElementById('existingMortgageFreq').value,
     otherCommit: document.getElementById('otherCommit').value,
+    otherCommitFreq: document.getElementById('otherCommitFreq').value,
     propertyValue: document.getElementById('propertyValue').value,
     deposit: document.getElementById('deposit').value,
     loanTerm: document.getElementById('loanTerm').value,
@@ -1328,6 +1472,7 @@ function readInputs() {
     rateBuffer: document.getElementById('rateBuffer').value,
     floorRate: document.getElementById('floorRate').value,
     loanPurpose: document.querySelector('input[name="loanPurpose"]:checked').value,
+    expectedRental: document.getElementById('expectedRental').value,
     repType: document.querySelector('input[name="repType"]:checked').value,
   };
 }
@@ -1430,7 +1575,13 @@ function renderResults(res) {
   document.getElementById('metricLVRSub').textContent = res.targetLoan > 0 ? `${fmt(res.targetLoan)} loan / ${fmt(parseFloat(document.getElementById('propertyValue').value))} property` : 'Loan-to-value ratio';
 
   // DTI — max borrowing / annual income
-  document.getElementById('metricDTI').textContent = res.dti !== null ? res.dti.toFixed(1) + 'x' : '—';
+  // DTI — target loan / income is the meaningful figure (matches LVR/surplus/position basis);
+  // falls back to max-borrowing DTI only when there's no target loan entered yet.
+  const primaryDti = res.targetLoan > 0 ? res.targetDti : res.dti;
+  document.getElementById('metricDTI').textContent = primaryDti !== null ? primaryDti.toFixed(1) + 'x' : '—';
+  document.getElementById('metricDTISub').textContent = res.targetLoan > 0
+    ? `Target loan · max borrowing ${res.dti !== null ? res.dti.toFixed(1) + 'x' : '—'}`
+    : 'Max borrowing / income';
   document.getElementById('metricNetIncome').textContent = fmtM(res.netMonthlyIncome);
 
   // Surplus — at TARGET loan (the meaningful number)
@@ -1597,6 +1748,8 @@ function onInputChange() {
   document.getElementById('app2-emp').style.display = isJoint ? '' : 'none';
   document.getElementById('income2-section').style.display = isJoint ? '' : 'none';
   document.getElementById('help-detail').style.display = document.getElementById('helpDebt').checked ? '' : 'none';
+  document.getElementById('rent-detail').style.display = document.getElementById('livingSituation').value === 'renting' ? '' : 'none';
+  document.getElementById('investor-detail').style.display = document.querySelector('input[name="loanPurpose"]:checked').value === 'investor' ? '' : 'none';
 
   // Update shading badges
   document.getElementById('shade-bonus').textContent = assumptions.shading.bonus + '%';
@@ -1707,6 +1860,8 @@ function scrollToCompare() {
 function resetAll() {
   if (!confirm('Reset all inputs to defaults?')) return;
   document.getElementById('appSingle').checked = true;
+  document.getElementById('emp1').value = 'fulltime';
+  document.getElementById('emp2').value = 'fulltime';
   document.getElementById('base1').value = 120000;
   document.getElementById('bonus1').value = 0;
   document.getElementById('ot1').value = 0;
@@ -1715,17 +1870,26 @@ function resetAll() {
   document.getElementById('base2').value = 80000;
   document.getElementById('dependants').value = 0;
   document.getElementById('livingSituation').value = 'renting';
+  document.getElementById('rentAmount').value = 0;
+  document.getElementById('rentFreq').value = 'monthly';
+  document.getElementById('rentContinues').checked = false;
   document.getElementById('helpDebt').checked = false;
   document.getElementById('actualExpenses').value = 3500;
   document.getElementById('childcare').value = 0;
   document.getElementById('schoolFees').value = 0;
   document.getElementById('insurance').value = 0;
+  document.getElementById('insuranceFreq').value = 'monthly';
   document.getElementById('ccLimit').value = 10000;
   document.getElementById('bnpl').value = 0;
+  document.getElementById('bnplFreq').value = 'monthly';
   document.getElementById('personalLoan').value = 0;
+  document.getElementById('personalLoanFreq').value = 'monthly';
   document.getElementById('carLoan').value = 0;
+  document.getElementById('carLoanFreq').value = 'monthly';
   document.getElementById('existingMortgage').value = 0;
+  document.getElementById('existingMortgageFreq').value = 'monthly';
   document.getElementById('otherCommit').value = 0;
+  document.getElementById('otherCommitFreq').value = 'monthly';
   document.getElementById('propertyValue').value = 800000;
   document.getElementById('deposit').value = 160000;
   document.getElementById('loanTerm').value = 30;
@@ -1733,6 +1897,7 @@ function resetAll() {
   document.getElementById('rateBuffer').value = 3.0;
   document.getElementById('floorRate').value = 9.0;
   document.getElementById('lp-oo').checked = true;
+  document.getElementById('expectedRental').value = 0;
   document.getElementById('rt-pi').checked = true;
   resetScenarios();
   // Close all accordions, reopen first
@@ -1756,6 +1921,11 @@ function saveSettings() {
   assumptions.shading.overtime = parseFloat(document.getElementById('s-ot').value) || 80;
   assumptions.shading.rental = parseFloat(document.getElementById('s-rental').value) || 75;
   assumptions.shading.other = parseFloat(document.getElementById('s-other').value) || 100;
+  assumptions.empShading.fulltime = parseFloat(document.getElementById('s-emp-fulltime').value) || 100;
+  assumptions.empShading.parttime = parseFloat(document.getElementById('s-emp-parttime').value) || 100;
+  assumptions.empShading.casual = parseFloat(document.getElementById('s-emp-casual').value) || 90;
+  assumptions.empShading.contractor = parseFloat(document.getElementById('s-emp-contractor').value) || 90;
+  assumptions.empShading.selfemployed = parseFloat(document.getElementById('s-emp-selfemployed').value) || 80;
   assumptions.hem.s0 = parseFloat(document.getElementById('hem-s0').value) || 2000;
   assumptions.hem.s1 = parseFloat(document.getElementById('hem-s1').value) || 2700;
   assumptions.hem.s2 = parseFloat(document.getElementById('hem-s2').value) || 3200;
@@ -1777,6 +1947,11 @@ function resetAssumptions() {
   document.getElementById('s-ot').value = 80;
   document.getElementById('s-rental').value = 75;
   document.getElementById('s-other').value = 100;
+  document.getElementById('s-emp-fulltime').value = 100;
+  document.getElementById('s-emp-parttime').value = 100;
+  document.getElementById('s-emp-casual').value = 90;
+  document.getElementById('s-emp-contractor').value = 90;
+  document.getElementById('s-emp-selfemployed').value = 80;
   document.getElementById('hem-s0').value = 2000;
   document.getElementById('hem-s1').value = 2700;
   document.getElementById('hem-s2').value = 3200;
@@ -1808,7 +1983,7 @@ async function callAI(systemPrompt, userMessage) {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01' },
     body: JSON.stringify({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-haiku-4-5-20251001',
       max_tokens: 800,
       system: systemPrompt,
       messages: [{ role: 'user', content: userMessage }]
@@ -1879,6 +2054,12 @@ Provide 3-4 specific improvement suggestions as a JSON array of strings.`;
   }
 }
 
+const COPILOT_ALLOWED_FIELDS = ['base1', 'bonus1', 'ot1', 'rental1', 'other1', 'base2', 'bonus2', 'ot2', 'rental2', 'other2',
+  'ccLimit', 'bnpl', 'personalLoan', 'carLoan', 'existingMortgage', 'otherCommit',
+  'interestRate', 'rateBuffer', 'floorRate', 'deposit', 'propertyValue', 'loanTerm',
+  'dependants', 'actualExpenses', 'childcare', 'schoolFees', 'insurance',
+  'isJoint', 'helpDebt'];
+
 async function sendCopilot(preset) {
   const inputEl = document.getElementById('copilotInput');
   const query = preset || inputEl.value.trim();
@@ -1914,24 +2095,33 @@ User question: "${query}"`;
     const raw = await callAI(systemPrompt, inputSummary);
     const clean = raw.replace(/```json|```/g, '').trim();
     const parsed = JSON.parse(clean);
-    
+
+    // Validate returned fields against the whitelist — don't silently drop unknowns
+    const allChangeKeys = Object.keys(parsed.changes || {});
+    const rejectedKeys = allChangeKeys.filter(k => !COPILOT_ALLOWED_FIELDS.includes(k));
+    const validChanges = {};
+    allChangeKeys.forEach(k => { if (COPILOT_ALLOWED_FIELDS.includes(k)) validChanges[k] = parsed.changes[k]; });
+
     // Apply changes temporarily and calculate
     const modInputs = { ...inputs };
-    Object.assign(modInputs, parsed.changes);
+    Object.assign(modInputs, validChanges);
     modInputs.isJoint = modInputs.isJoint === 'true' || modInputs.isJoint === true;
-    
+
     const modResult = runCalc(modInputs, assumptions);
     const base = currentResult ? currentResult.borrowingPower : 0;
     const delta = modResult.borrowingPower - base;
     const deltaStr = (delta >= 0 ? '+' : '') + fmt(delta);
 
-    const reply = `${parsed.description}\n\nScenario result: <strong>${fmt(modResult.borrowingPower)}</strong> (${deltaStr} vs current base). Monthly surplus: ${fmtM(modResult.surplus)}.`;
+    const rejectedNote = rejectedKeys.length > 0
+      ? `<br><span style="color:var(--amber);font-size:11px;">⚠ Ignored unrecognized field${rejectedKeys.length > 1 ? 's' : ''}: ${rejectedKeys.join(', ')}</span>`
+      : '';
+    const reply = `${parsed.description}\n\nScenario result: <strong>${fmt(modResult.borrowingPower)}</strong> (${deltaStr} vs current base). Monthly surplus: ${fmtM(modResult.surplus)}.${rejectedNote}`;
     document.getElementById(thinkingId).innerHTML = reply;
     msgDiv.scrollTop = msgDiv.scrollHeight;
 
     // Offer to apply
-    if (Object.keys(parsed.changes).length > 0) {
-      document.getElementById(thinkingId).innerHTML += `<br><button onclick="applyScenarioChanges(${JSON.stringify(parsed.changes).replace(/"/g, '&quot;')})" style="margin-top:6px;padding:3px 10px;font-size:11px;background:var(--navy);color:white;border:none;border-radius:4px;cursor:pointer;">Apply these changes</button>`;
+    if (Object.keys(validChanges).length > 0) {
+      document.getElementById(thinkingId).innerHTML += `<br><button onclick="applyScenarioChanges(${JSON.stringify(validChanges).replace(/"/g, '&quot;')})" style="margin-top:6px;padding:3px 10px;font-size:11px;background:var(--navy);color:white;border:none;border-radius:4px;cursor:pointer;">Apply these changes</button>`;
     }
   } catch(e) {
     document.getElementById(thinkingId).innerHTML = `<span style="color:var(--red);">⚠ ${e.message}</span>`;
